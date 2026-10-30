@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kế hoạch truyền thông Xuân Quê hương 2027</title>
+  <meta name="description" content="Kế hoạch truyền thông chương trình Xuân Quê hương Đinh Mùi 2027 tại Algeria, trình bày bằng web.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#/" aria-label="Về trang mở đầu">Xuân Quê hương <span>2027</span></a>
+  <nav class="stepper" id="stepper" aria-label="Các phần của bài trình bày">
+    <a href="#/" data-step="0"><i>1</i>Mở đầu</a>
+    <a href="#/noi-dung" data-step="1"><i>2</i>Nội dung trình bày</a>
+    <a href="#/proposal" data-step="2"><i>3</i>Proposal</a>
+    <a href="#/moodboard" data-step="3"><i>4</i>Moodboard</a>
+    <a href="#/khong-gian" data-step="4"><i>5</i>Không gian 3D</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- 1. MỞ ĐẦU -->
+  <section class="view view-home" id="view-home" data-route="/">
+    <div class="hero" id="hero">
+      <div class="hero-copy">
+        <p class="hero-org" id="heroOrg"></p>
+        <h1>Kế hoạch<br>truyền thông</h1>
+        <p class="hero-event" id="heroEvent"></p>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-gold" href="#/noi-dung">Bắt đầu xem</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. NỘI DUNG TRÌNH BÀY -->
+  <section class="view view-content" id="view-content" data-route="/noi-dung">
+    <div class="page">
+      <h2>Nội dung trình bày</h2>
+      <p class="lead">Chọn cách xem phù hợp. Bản tài liệu dùng để tải về và trình bày với Đại sứ, còn phần Proposal dẫn qua toàn bộ kế hoạch bằng slide, rồi tới moodboard và không gian 3D của sân tổ chức.</p>
+
+      <div class="choices">
+        <article class="choice choice-docs">
+          <h3>Cho các documents</h3>
+          <p>Bản kế hoạch truyền thông tổng quan dạng văn bản, tải về để chỉnh sửa hoặc in.</p>
+          <ul class="doclist" id="docList"></ul>
+        </article>
+
+        <a class="choice choice-proposal" href="#/proposal">
+          <h3>Proposal</h3>
+          <p>Xem kế hoạch truyền thông tổng quan và timeline truyền thông online, offline dưới dạng slide.</p>
+          <span class="choice-go">Mở phần slide</span>
+        </a>
+      </div>
+
+      <ol class="flow" aria-label="Thứ tự xem sau phần Proposal">
+        <li>Slide proposal</li>
+        <li>Moodboard và visual cue</li>
+        <li>Không gian 3D khu sân tổ chức</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 3. PROPOSAL -->
+  <section class="view view-proposal" id="view-proposal" data-route="/proposal">
+    <div class="page page-wide">
+      <h2>Proposal truyền thông</h2>
+      <p class="lead">Kế hoạch truyền thông tổng quan, timeline truyền thông online và offline.</p>
+      <div class="slide-frame" id="slideHost"></div>
+      <div class="pager">
+        <a class="btn btn-line" href="#/noi-dung">Quay lại</a>
+        <button class="btn btn-line" id="slideFull" type="button">Toàn màn hình</button>
+        <a class="btn btn-red" href="#/moodboard">Tiếp tục tới Moodboard</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. MOODBOARD -->
+  <section class="view view-mood" id="view-moodboard" data-route="/moodboard">
+    <div class="page page-wide">
+      <h2>Moodboard và visual cue</h2>
+      <p class="lead">Không khí, hình ảnh nhận diện và các yếu tố đồ họa xuyên suốt chương trình.</p>
+
+      <h3 class="sec">Moodboard</h3>
+      <div class="masonry" id="moodGrid"></div>
+
+      <h3 class="sec">Visual cue</h3>
+      <div class="vcue">
+        <figure class="vcue-key" id="keyVisual"></figure>
+        <div class="vcue-side">
+          <div class="palette" id="palette"></div>
+          <div class="type-spec" id="typeSpec"></div>
+        </div>
+      </div>
+
+      <h3 class="sec">Elements</h3>
+      <div class="elements" id="elementGrid"></div>
+
+      <div class="pager">
+        <a class="btn btn-line" href="#/proposal">Quay lại slide</a>
+        <a class="btn btn-red" href="#/khong-gian">Tiếp tục tới không gian 3D</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. KHÔNG GIAN 3D -->
+  <section class="view view-space" id="view-space" data-route="/khong-gian">
+    <div class="space" id="space">
+      <div class="space-canvas" id="spaceCanvas"></div>
+      <div class="hotspots" id="hotspots"></div>
+      <p class="space-loading" id="spaceLoading">Đang dựng không gian</p>
+
+      <div class="space-bar space-views" id="viewButtons" role="group" aria-label="Góc nhìn"></div>
+      <div class="space-bar space-tools" role="group" aria-label="Công cụ">
+        <div class="seg" id="timeSeg">
+          <button type="button" data-time="dusk" class="on">Buổi tối</button>
+          <button type="button" data-time="day">Ban ngày</button>
+        </div>
+        <button type="button" class="tool" id="tourBtn">Tham quan tự động</button>
+      </div>
+
+      <aside class="legend" id="legend">
+        <button type="button" class="legend-toggle" id="legendToggle" aria-expanded="true">Các khu trong sân</button>
+        <ol id="legendList"></ol>
+      </aside>
+
+      <aside class="panel" id="panel" hidden>
+        <button type="button" class="panel-close" id="panelClose" aria-label="Đóng">Đóng</button>
+        <p class="panel-no" id="panelNo"></p>
+        <h3 id="panelName"></h3>
+        <p id="panelDesc"></p>
+        <p class="panel-plan" id="panelPlan"></p>
+        <figure class="panel-ref" id="panelRef" hidden>
+          <img id="panelImg" alt="" loading="lazy">
+          <figcaption>Ảnh tham khảo từ chương trình năm 2026</figcaption>
+        </figure>
+        <div class="panel-nav">
+          <button type="button" class="btn btn-line" id="panelPrev">Khu trước</button>
+          <button type="button" class="btn btn-line" id="panelNext">Khu sau</button>
+        </div>
+      </aside>
+
+      <p class="space-hint" id="spaceHint">Kéo để xoay, cuộn hoặc chụm hai ngón để phóng to, chạm vào số để xem từng khu.</p>
+    </div>
+    <div class="space-foot">
+      <a class="btn btn-line" href="#/moodboard">Quay lại Moodboard</a>
+      <a class="btn btn-line" href="#/">Về trang mở đầu</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="sitefoot" id="siteFoot"></footer>
+
+<dialog class="lightbox" id="lightbox">
+  <button type="button" id="lightboxClose" aria-label="Đóng ảnh">Đóng</button>
+  <img id="lightboxImg" alt="">
+  <p id="lightboxCap"></p>
+</dialog>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
