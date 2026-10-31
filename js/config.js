@@ -1,7 +1,7 @@
 /*
-  FILE CẤU HÌNH DUY NHẤT CỦA TRANG WEB
-  Team chỉ cần sửa file này để thay nội dung, không cần đụng vào code khác.
-  Đường dẫn ảnh và file tính từ thư mục gốc của repo (nơi có index.html).
+  NỘI DUNG MẶC ĐỊNH CỦA TRANG WEB
+  Nội dung thật được chỉnh trong trang quản trị (admin.html) và lưu ở data/content.json.
+  File này chỉ là bản dự phòng khi data/content.json chưa có hoặc thiếu mục nào đó.
 */
 
 export const CONFIG = {
@@ -10,56 +10,35 @@ export const CONFIG = {
   org: 'Đại sứ quán Việt Nam tại Algeria',
   team: 'Nhóm thực tập sinh',
 
-  /* 1. TRANG MỞ ĐẦU
-     Thả ảnh thiết kế (đã có sẵn tiêu đề Kế hoạch truyền thông) vào assets/hero/
-     rồi sửa tên file bên dưới. Nếu chưa có ảnh, trang sẽ hiện bản tạm.
-     fit = 'cover' (phủ kín màn hình) hoặc 'contain' (hiện trọn ảnh, không bị cắt). */
-  hero: {
-    image: 'assets/hero/key-visual.jpg',
-    fit: 'cover'
+  hero: { image: 'assets/hero/key-visual.jpg', fit: 'cover', button: 'Bắt đầu xem' },
+
+  content: {
+    title: 'Nội dung trình bày',
+    lead: 'Chọn cách xem phù hợp. Kho tài liệu dùng để tải bản kế hoạch về trình bày với Đại sứ, còn phần Proposal dẫn qua toàn bộ kế hoạch bằng slide, rồi tới moodboard và không gian 3D của sân tổ chức.',
+    docsTitle: 'Kho lưu trữ tài liệu mềm',
+    docsDesc: 'Bản kế hoạch truyền thông tổng quan dạng văn bản, phục vụ tải về để chỉnh sửa hoặc in.',
+    proposalTitle: 'Proposal',
+    proposalDesc: 'Xem kế hoạch truyền thông tổng quan và timeline truyền thông online, offline dưới dạng slide.',
+    proposalButton: 'Mở phần slide'
   },
 
-  /* 2. CHO CÁC DOCUMENTS
-     Upload file vào assets/docs/ rồi sửa tên file. Có thể thêm hoặc bớt dòng. */
   documents: [
-    {
-      label: 'Bản Word',
-      file: 'assets/docs/ke-hoach-truyen-thong-tong-quan.docx',
-      note: 'Dùng để chỉnh sửa hoặc trình bày với Đại sứ'
-    },
-    {
-      label: 'Bản PDF',
-      file: 'assets/docs/ke-hoach-truyen-thong-tong-quan.pdf',
-      note: 'Dùng để xem nhanh và in'
-    }
+    { label: 'Bản Word', file: 'assets/docs/ke-hoach-truyen-thong-tong-quan.docx', note: 'Dùng để chỉnh sửa hoặc trình bày với Đại sứ' },
+    { label: 'Bản PDF', file: 'assets/docs/ke-hoach-truyen-thong-tong-quan.pdf', note: 'Dùng để xem nhanh và in' }
   ],
 
-  /* 3. PROPOSAL (SLIDE)
-     Cách 1 (nên dùng) dán link nhúng của Canva vào canvaEmbedUrl.
-       Trên Canva chọn Chia sẻ, Xem thêm, Nhúng, rồi chép link dạng
-       https://www.canva.com/design/XXXX/view?embed
-     Cách 2 xuất slide thành ảnh, bỏ vào assets/slides/ rồi liệt kê trong slideImages.
-       Với cách này, bấm qua slide cuối trang sẽ tự chuyển sang Moodboard.
-     Nếu cả hai cùng trống, trang hiện khung chờ. */
   proposal: {
+    title: 'Proposal truyền thông',
+    lead: 'Kế hoạch truyền thông tổng quan, timeline truyền thông online và offline.',
     canvaEmbedUrl: '',
-    slideImages: [
-      // 'assets/slides/slide-01.jpg',
-      // 'assets/slides/slide-02.jpg',
-    ]
+    slideImages: []
   },
 
-  /* 4. MOODBOARD VÀ VISUAL CUE
-     Bỏ ảnh vào assets/moodboard/ rồi liệt kê. Khi để trống, trang hiện ô chờ. */
   moodboard: {
-    images: [
-      // { src: 'assets/moodboard/mb-01.jpg', caption: 'Không khí sum họp' },
-    ],
-    keyVisual: {
-      image: '', // ví dụ 'assets/moodboard/key-visual.jpg'
-      caption: 'Key visual của chương trình'
-    },
-    // Bảng màu đề xuất, rút ra từ ảnh chương trình năm 2026. Team thay bằng bảng màu thật.
+    title: 'Moodboard và visual cue',
+    lead: 'Không khí, hình ảnh nhận diện và các yếu tố đồ họa xuyên suốt chương trình.',
+    images: [],
+    keyVisual: { image: '', caption: 'Key visual của chương trình' },
     palette: [
       { name: 'Đỏ lụa', hex: '#A8141F', role: 'Màu chủ đạo, khăn bàn, lồng đèn' },
       { name: 'Vàng mai', hex: '#E3B04B', role: 'Chữ tiêu đề, đường viền' },
@@ -67,95 +46,115 @@ export const CONFIG = {
       { name: 'Xanh lá dong', hex: '#2F6B3F', role: 'Khu bánh chưng, điểm nhấn' },
       { name: 'Trắng vôi', hex: '#F3F1EC', role: 'Nền, khoảng thở' }
     ],
-    typography: {
-      display: 'Cormorant Garamond',
-      body: 'Be Vietnam Pro',
-      sample: 'Xuân Quê hương Đinh Mùi 2027'
-    },
-    elements: [
-      // { src: 'assets/moodboard/el-lantern.png', caption: 'Lồng đèn' },
-    ]
+    fonts: [
+      { role: 'Chữ tiêu đề', family: 'Cormorant Garamond', sample: 'Xuân Quê hương Đinh Mùi 2027' },
+      { role: 'Chữ nội dung', family: 'Be Vietnam Pro', sample: 'Gắn kết cộng đồng, lan tỏa bản sắc Việt Nam' }
+    ],
+    elements: []
   },
 
-  /* 5. KHÔNG GIAN 3D
-     backdropImage là ảnh phông nền trong mô hình 3D. Thả file thiết kế phông
-     vào assets/backdrop/ để xem thiết kế thật trên sân khấu.
-     backdropSize là kích thước phông thật tính bằng mét (rộng, cao).
-     useLed = true nếu đổi phông thành màn hình LED (phông sẽ tự phát sáng). */
   scene: {
     backdropImage: 'assets/backdrop/backdrop-2027.jpg',
     backdropSize: [6.4, 3.4],
-    useLed: false
+    useLed: false,
+    emblemImage: 'assets/ref/quoc-huy.png',
+    embassy: {
+      nameVi: 'ĐẠI SỨ QUÁN VIỆT NAM TẠI ALGERIA',
+      nameFr: 'AMBASSADE DE LA RÉPUBLIQUE SOCIALISTE DU VIETNAM EN ALGÉRIE',
+      address: '30, Chénoua Street, Hydra, Algiers, Algeria'
+    },
+    couplets: {
+      left: 'Xuân Sang Cội Phúc Sinh Nhành Lộc',
+      right: 'Tết Về Cây Đức Trổ Thêm Hoa'
+    },
+    foods: [
+      { kind: 'pho', name: 'Phở bò', image: 'assets/food/pho.jpg' },
+      { kind: 'banhmi', name: 'Bánh mì', image: 'assets/food/banh-mi.jpg' },
+      { kind: 'sup', name: 'Súp', image: 'assets/food/sup.jpg' },
+      { kind: 'che', name: 'Chè', image: 'assets/food/che.jpg' },
+      { kind: 'banhchung', name: 'Bánh chưng', image: '' },
+      { kind: 'drink', name: 'Nước uống', image: '' }
+    ]
   },
 
-  /* Các khu trong mô hình 3D, xếp theo hành trình của khách từ cổng vào đến sân khấu.
-     id phải khớp với mã khu trong js/scene3d.js. Chỉ nên sửa chữ. */
+  thanks: {
+    title: 'Xin trân trọng cảm ơn',
+    message: 'Nhóm thực tập sinh xin chân thành cảm ơn quý lãnh đạo đã dành thời gian theo dõi kế hoạch truyền thông chương trình Xuân Quê hương 2027. Rất mong nhận được ý kiến đóng góp của quý lãnh đạo để chương trình thêm trọn vẹn.',
+    sign: 'Nhóm thực tập sinh, Đại sứ quán Việt Nam tại Algeria'
+  },
+
   zones: [
     {
-      id: 'gate', no: 1, name: 'Cổng chào và bàn đón khách',
-      desc: 'Điểm bắt đầu hành trình của khách. Cổng dựng bằng hai trụ đỏ, treo lồng đèn và đặt chậu hoa đào hai bên. Bàn đón khách đặt cạnh cổng để hướng dẫn và phát thiệp.',
-      plan: 'Gợi ý truyền thông tại chỗ: biển tên chương trình, mã QR dẫn tới trang đăng ảnh sau sự kiện, và điểm chụp ảnh đầu tiên cho khách.',
-      ref: ''
+      id: 'gate', no: 1, name: 'Cổng chào',
+      desc: 'Cổng vòm đỏ trang trí hoa giấy, quạt, đồng tiền vàng và lồng đèn, phía trên là biển Xuân Quê hương 2027. Hai bên là hàng rào tre treo nón lá và câu đối chữ thoi. Bên cạnh có bảng hiệu Đại sứ quán kèm quốc huy và địa chỉ.',
+      plan: 'Điểm chụp ảnh đầu tiên của khách. Thảm đỏ dẫn thẳng từ cổng tới bàn đón tiếp.',
+      refs: ['assets/ref/ref-cong-1.jpg', 'assets/ref/ref-cong-2.jpg', 'assets/ref/ref-cong-3.jpg']
     },
     {
-      id: 'coffee', no: 2, name: 'Gian thưởng thức cà phê',
-      desc: 'Gian hàng giới thiệu cà phê Việt Nam. Quầy phủ khăn trắng, có dải hoa đào và lồng đèn treo phía trên, phía sau là poster giới thiệu.',
-      plan: 'Gợi ý hình ảnh truyền thông: khoảnh khắc cà phê phin nhỏ giọt và khách quốc tế nếm thử. Phù hợp để quay video ngắn.',
-      ref: 'assets/ref/ref-gian-hang.jpg'
+      id: 'reception', no: 2, name: 'Bàn đón tiếp',
+      desc: 'Điểm đến đầu tiên sau cổng chào. Quầy phủ đỏ có sổ lưu bút, thiệp và chậu hoa mai, hoa đào hai bên, phía sau là panel chào mừng song ngữ Việt Pháp.',
+      plan: 'Nhân sự đón khách, phát sơ đồ chương trình và hướng dẫn khách tới từng khu. Đây cũng là nơi cho khách quét mã QR xem ảnh sau sự kiện.',
+      refs: []
     },
     {
-      id: 'tea', no: 3, name: 'Gian thưởng thức trà',
-      desc: 'Gian hàng trà đặt cạnh gian cà phê để khách đi tiếp tự nhiên. Quầy bày ấm, chén và khay trà, bố trí đồng bộ với gian cà phê.',
-      plan: 'Gợi ý nội dung: giới thiệu ngắn về văn hóa uống trà ngày Tết, song ngữ Việt Pháp trên biển nhỏ đặt cạnh quầy.',
-      ref: 'assets/ref/ref-gian-hang.jpg'
+      id: 'coffee', no: 3, name: 'Gian thưởng thức cà phê',
+      desc: 'Gian hàng lớn với mái che sọc đỏ trắng, banner cà phê phía sau, kệ gỗ bày gói cà phê, quầy có phin và nhiều cốc cà phê. Hai bên treo câu đối và lồng đèn, cạnh gian đặt chậu hoa đào.',
+      plan: 'Hình ảnh truyền thông nhấn vào khoảnh khắc cà phê phin nhỏ giọt và khách quốc tế nếm thử, phù hợp quay video ngắn.',
+      refs: ['assets/ref/ref-ca-phe.jpg', 'assets/ref/ref-gian-hang.jpg']
     },
     {
-      id: 'banhchung', no: 4, name: 'Khu trải nghiệm gói bánh chưng',
-      desc: 'Hai bàn dài có lá dong, gạo nếp, nhân và khuôn gói, kèm ghế đẩu cho khách ngồi gói. Nồi bánh đặt ở góc khu để khách thấy trọn vòng đời của chiếc bánh.',
-      plan: 'Đây là khu có nhiều ảnh và video tương tác nhất, nên bố trí một người chuyên chụp và quay ở đây, cùng người hướng dẫn nói được tiếng Pháp.',
-      ref: 'assets/ref/ref-gian-hang.jpg'
+      id: 'tea', no: 4, name: 'Gian thưởng thức trà',
+      desc: 'Gian trà cùng phong cách với gian cà phê nhưng banner màu xanh lá. Kệ bày hộp và lon trà, quầy có bộ ấm chén và nhiều chén trà để khách nếm thử.',
+      plan: 'Biển nhỏ song ngữ giới thiệu văn hóa uống trà ngày Tết đặt cạnh quầy.',
+      refs: ['assets/ref/ref-tra.jpg', 'assets/ref/ref-gian-hang.jpg']
     },
     {
-      id: 'cocktail', no: 5, name: 'Bàn tiệc đứng',
-      desc: 'Các bàn cao phủ khăn đỏ đặt rải ở giữa sân, để khách vừa đứng dùng món vừa trò chuyện. Trên bàn có bát giấy kraft và ly giấy kẻ caro đỏ như ở chương trình năm 2026.',
-      plan: 'Khu giao lưu chính giữa cộng đồng và đại diện chính quyền sở tại, nơi dễ ghi lại những khoảnh khắc tự nhiên.',
-      ref: 'assets/ref/ref-ban-tiec-dung.jpg'
+      id: 'banhchung', no: 5, name: 'Khu trải nghiệm gói bánh chưng',
+      desc: 'Bàn gói có lá dong, nếp, nhân và khuôn, phía trước là ba tấm chiếu cói để khách ngồi gói cùng người hướng dẫn. Nồi bánh đặt ở góc ngoài, dễ nhìn từ lối đi, có hơi nước bốc lên.',
+      plan: 'Khu nhiều ảnh và video tương tác nhất, nên bố trí một người chụp quay riêng và người hướng dẫn nói được tiếng Pháp.',
+      refs: ['assets/ref/ref-chieu-coi.jpg', 'assets/ref/ref-gian-hang.jpg']
     },
     {
-      id: 'buffet', no: 6, name: 'Quầy món ăn buffet',
-      desc: 'Hai quầy dài phủ khăn đỏ kẻ caro với khay giữ nóng, bát kraft và cờ Việt Nam nhỏ trên bàn, đặt dưới mái che phía bên phải để tránh gió và mưa.',
-      plan: 'Gợi ý vận hành: biển tên món song ngữ và lối đi một chiều giữa hai quầy để khách không dồn lại một điểm.',
-      ref: 'assets/ref/ref-quay-buffet.jpg'
+      id: 'cocktail', no: 6, name: 'Bàn tiệc đứng',
+      desc: 'Các bàn cao phủ khăn đỏ đặt rải ở giữa sân để khách vừa đứng dùng món vừa trò chuyện, trên bàn có bát giấy kraft và ly kẻ caro đỏ như năm 2026.',
+      plan: 'Khu giao lưu chính giữa cộng đồng và đại diện chính quyền sở tại, dễ ghi lại khoảnh khắc tự nhiên.',
+      refs: ['assets/ref/ref-ban-tiec-dung.jpg']
     },
     {
-      id: 'seating', no: 7, name: 'Khu mời ngồi',
-      desc: 'Các bàn tròn dành cho khách lớn tuổi, gia đình có trẻ nhỏ và khách cần nghỉ chân. Đặt ở bên trái gần sân khấu, dưới tán cây để có bóng mát.',
+      id: 'buffet', no: 7, name: 'Khu buffet món Việt',
+      desc: 'Mái che lớn với sáu bàn, mỗi bàn một món có ảnh minh họa. Gồm phở, bánh mì, súp, chè, bánh chưng và quầy nước, đủ phục vụ trên 150 khách chia thành các hàng đợi.',
+      plan: 'Biển tên món song ngữ, hai bên mái treo lồng đèn và câu đối. Lối đi giữa các hàng một chiều để khách không dồn lại một điểm.',
+      refs: ['assets/ref/ref-quay-buffet.jpg', 'assets/ref/ref-gian-hang.jpg']
+    },
+    {
+      id: 'seating', no: 8, name: 'Khu mời ngồi',
+      desc: 'Các bàn tròn cho khách lớn tuổi, gia đình có trẻ nhỏ và khách cần nghỉ chân, đặt bên trái gần sân khấu, dưới tán cây.',
       plan: 'Có thể đặt biển giữ chỗ nhỏ trên bàn cho khách mời chính.',
-      ref: ''
+      refs: []
     },
     {
-      id: 'standing', no: 8, name: 'Khu khách đứng',
+      id: 'standing', no: 9, name: 'Khu khách đứng',
       desc: 'Khoảng sân rộng trước sân khấu, nơi phần lớn trong khoảng 150 khách đứng theo dõi chương trình phát biểu và giao lưu.',
       plan: 'Chừa lối đi hai bên để nhân sự phục vụ và máy quay di chuyển mà không chắn tầm nhìn.',
-      ref: 'assets/ref/ref-san-khau.jpg'
+      refs: ['assets/ref/ref-san-khau.jpg']
     },
     {
-      id: 'stage', no: 9, name: 'Sân khấu',
-      desc: 'Bục thấp trải thảm đỏ đặt sát bức tường trắng. Đủ rộng cho phát biểu, trao quà và chụp ảnh lưu niệm tập thể cuối chương trình.',
-      plan: 'Hai chậu hoa đào và hoa mai đặt hai đầu bục, dây đèn nhỏ chạy dọc tường phía trên.',
-      ref: 'assets/ref/ref-san-khau.jpg'
+      id: 'stage', no: 10, name: 'Sân khấu',
+      desc: 'Bục thấp trải thảm đỏ sát tường trắng, đủ rộng cho phát biểu, trao quà và chụp ảnh tập thể cuối chương trình.',
+      plan: 'Hai chậu đào và mai đặt hai đầu bục, dây đèn nhỏ chạy dọc tường phía trên, hai bên phông treo câu đối.',
+      refs: ['assets/ref/ref-san-khau.jpg']
     },
     {
-      id: 'backdrop', no: 10, name: 'Phông nền',
-      desc: 'Theo ảnh năm 2026, phông là tấm in treo trên tường, có thanh đèn rọi phía trên và chưa dùng màn LED. Trong mô hình, thay ảnh trong thư mục assets/backdrop để xem thiết kế phông 2027 ngay trên sân khấu.',
+      id: 'backdrop', no: 11, name: 'Phông nền',
+      desc: 'Năm 2026 phông là tấm in có đèn rọi phía trên, chưa dùng màn LED. Phông 2027 cần có nét giao thoa với nước bạn Algeria. Thiết kế của team được thêm trong trang quản trị và hiện ngay trên sân khấu.',
       plan: 'Phông cũng là nền chụp ảnh tập thể, nên chữ và họa tiết cần đọc rõ khi có đông người đứng phía trước.',
-      ref: 'assets/ref/ref-phong-nen-2026.jpg'
+      refs: ['assets/ref/ref-phong-nen-2026.jpg']
     },
     {
-      id: 'podium', no: 11, name: 'Bục phát biểu',
-      desc: 'Đặt lệch về bên phải sân khấu, đủ gần phông để lên hình nhưng không che chữ chính. Có micro và biểu tượng chương trình ở mặt trước.',
+      id: 'podium', no: 12, name: 'Bục phát biểu',
+      desc: 'Đặt bên trái sân khấu, có micro và biểu tượng chương trình ở mặt trước. Người phát biểu đứng sau bục, gần phông để lên hình nhưng không che chữ chính.',
       plan: 'Cần kiểm tra góc máy từ khu khách đứng để phông luôn nằm gọn sau người phát biểu.',
-      ref: 'assets/ref/ref-san-khau.jpg'
+      refs: ['assets/ref/ref-san-khau.jpg']
     }
   ]
 };
