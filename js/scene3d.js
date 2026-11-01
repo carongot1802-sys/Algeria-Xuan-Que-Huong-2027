@@ -4,15 +4,15 @@ import { buildWorld, GEO, STAGE_RECT, STAGE_H } from './world.js';
 
 const VIEWS = {
   overview: { p: [15, 12.5, 17],  t: [0, 0.4, -1.5] },
-  gate:     { p: [0, 1.9, 9.2],   t: [0, 1.7, -9] },
+  gate:     { p: [0, 2.4, 25],    t: [0, 2.6, -9] },
   audience: { p: [0, 2.0, 4.5],   t: [0, 1.8, -9.5] },
   stage:    { p: [1, 2.0, -8.6],  t: [0, 1.2, 6] },
   top:      { p: [0.01, 30, 5],   t: [0, 0, -1] }
 };
 
 const TIMES = {
-  dusk: { bg: 0x2a3352, hemiSky: 0xaab8ff, hemiGround: 0x40302a, hemi: 1.05, sun: 0xffd2a0, sunI: 1.0, lantern: 1.7, fairy: 2.6, beam: 0.12, win: 1.3, bd: 0.16 },
-  day:  { bg: 0xbcd8ee, hemiSky: 0xffffff, hemiGround: 0xb9a58c, hemi: 1.15, sun: 0xfff4e0, sunI: 2.3, lantern: 0.15, fairy: 0.1, beam: 0.0, win: 0.0, bd: 0.05 }
+  dusk: { bg: 0x3a4670, hemiSky: 0xc4ceff, hemiGround: 0x5a463a, hemi: 1.55, sun: 0xffe0b0, sunI: 1.4, lantern: 1.9, fairy: 2.8, beam: 0.14, win: 1.3, bd: 0.4, tw: 1.0, lamp: 1 },
+  day:  { bg: 0xbcd8ee, hemiSky: 0xffffff, hemiGround: 0xb9a58c, hemi: 1.15, sun: 0xfff4e0, sunI: 2.3, lantern: 0.2, fairy: 0.15, beam: 0.0, win: 0.0, bd: 0.05, tw: 0.3, lamp: 0 }
 };
 
 const EYE = 1.62;
@@ -73,7 +73,7 @@ export function createScene(container, opts) {
   };
   const world = buildWorld(cfg, env);
   scene.add(world.root);
-  const { obstacles, steamPuffs, backdropMat, lanternMat, fairyMat, bldMat, beamMats, useLed } = world;
+  const { obstacles, steamPuffs, backdropMat, lanternMat, fairyMat, bldMat, beamMats, useLed, lamps, twinkle, foodTables } = world;
 
   /* ---------- Vùng sáng sàn, vùng bấm, số hiệu ---------- */
   const highlights = {};
@@ -95,12 +95,32 @@ export function createScene(container, opts) {
     proxies.push(proxy);
   });
 
+  const foodProxies = [];
+  const foodGeo = {};
+  foodTables.forEach(({ i, x, z }) => {
+    const id = 'food:' + i;
+    foodGeo[id] = { area: [x, z, 2.7, 1.25], hot: [x, 1.55, z], cam: { p: [x, 2.4, z + 3.6], t: [x, 0.9, z] } };
+    const hl = new THREE.Mesh(new THREE.PlaneGeometry(2.7, 1.25), new THREE.MeshBasicMaterial({ color: 0xe3b04b, transparent: true, opacity: 0, depthWrite: false }));
+    hl.rotation.x = -Math.PI / 2; hl.position.set(x, 0.07, z); scene.add(hl); highlights[id] = hl;
+    const px = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.3, 1.2), new THREE.MeshBasicMaterial({ visible: false }));
+    px.position.set(x, 0.65, z); px.userData.zone = id; scene.add(px); foodProxies.push(px);
+  });
   const hotEls = {};
+  foodTables.forEach(({ i }) => {
+    const id = 'food:' + i;
+    const f = cfg.scene.foods[i] || {};
+    const b = document.createElement('button');
+    b.dataset.id = id; b.type = 'button'; b.className = 'hotspot mini'; b.setAttribute('aria-label', f.name || 'Món ăn');
+    b.innerHTML = `<b></b><span>${f.name || ''}</span>`;
+    b.addEventListener('click', e => { e.stopPropagation(); selectZone(id); });
+    hotspotLayer.appendChild(b);
+    hotEls[id] = { el: b, v: new THREE.Vector3(...foodGeo[id].hot) };
+  });
   zones.forEach(z => {
     const geo = GEO[z.id];
     if (!geo) return;
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'hotspot'; b.setAttribute('aria-label', z.name);
+    b.dataset.id = z.id; b.type = 'button'; b.className = 'hotspot'; b.setAttribute('aria-label', z.name);
     b.innerHTML = `<b>${z.no}</b><span>${z.name}</span>`;
     b.addEventListener('click', e => { e.stopPropagation(); selectZone(z.id); });
     hotspotLayer.appendChild(b);
@@ -139,7 +159,7 @@ export function createScene(container, opts) {
     if (onMode) onMode('orbit');
   }
   function startWalk() {
-    camera.getWorldDirection(tmpF);
+    tmpF.copy(controls.target).sub(camera.position).normalize();
     yaw = Math.atan2(-tmpF.x, -tmpF.z);
     pitch = clamp(Math.asin(tmpF.y), -1.0, 1.0);
     groundY = 0;
@@ -150,14 +170,15 @@ export function createScene(container, opts) {
   function setMode(m) {
     if (m === 'walk') {
       if (mode === 'walk') return;
-      flyTo([0, EYE, 9.6], [0, EYE - 0.05, -6], 1.3, startWalk);
+      flyTo([0, EYE, 15.8], [0, EYE - 0.05, 6], 1.3, startWalk);
     } else exitWalk();
   }
 
   function selectZone(id, { fly = true } = {}) {
     activeId = id;
     Object.entries(hotEls).forEach(([k, h]) => h.el.classList.toggle('on', k === id));
-    if (id && fly && GEO[id]) { exitWalk(); flyTo(GEO[id].cam.p, GEO[id].cam.t); }
+    const gg = GEO[id] || foodGeo[id];
+    if (id && fly && gg) { exitWalk(); flyTo(gg.cam.p, gg.cam.t); }
     if (onSelect) onSelect(id);
   }
   function setView(key) {
@@ -179,7 +200,10 @@ export function createScene(container, opts) {
     bldMat.emissiveIntensity = T.win;
     beamMats.forEach(b => { b.opacity = T.beam; });
     backdropMat.emissiveIntensity = useLed ? 0.9 : T.bd;
+    twScale = T.tw;
+    lamps.forEach(l => { l.light.intensity = m === 'dusk' ? l.dusk : l.day; });
   }
+  let twScale = 1;
 
   /* ---------- Pháo hoa giấy ---------- */
   const CONF_N = lowPower ? 420 : 720;
@@ -271,7 +295,7 @@ export function createScene(container, opts) {
     }
     if (e.buttons || mode === 'walk') return;
     setNdc(e); ray.setFromCamera(ndc, camera);
-    el.style.cursor = ray.intersectObjects(proxies, false).length ? 'pointer' : 'grab';
+    el.style.cursor = (ray.intersectObjects(foodProxies, false).length || ray.intersectObjects(proxies, false).length) ? 'pointer' : 'grab';
   });
   el.addEventListener('pointerup', e => {
     if (!down) return;
@@ -283,7 +307,7 @@ export function createScene(container, opts) {
     if (mode === 'walk') {
       if (ray.ray.intersectPlane(groundPlane, hitV)) walkTarget = { x: hitV.x, z: hitV.z };
     } else {
-      const hit = ray.intersectObjects(proxies, false)[0];
+      const hit = ray.intersectObjects(foodProxies, false)[0] || ray.intersectObjects(proxies, false)[0];
       if (hit) selectZone(hit.object.userData.zone);
     }
   });
@@ -297,7 +321,7 @@ export function createScene(container, opts) {
 
   /* ---------- Va chạm ---------- */
   function resolve(p) {
-    p.x = clamp(p.x, -11.6, 11.6); p.z = clamp(p.z, -9.4, 11.7);
+    p.x = clamp(p.x, -11.6, 11.6); p.z = clamp(p.z, -9.4, 16.0);
     const R = 0.3;
     for (const [x0, x1, z0, z1] of obstacles.rects) {
       if (p.x > x0 - R && p.x < x1 + R && p.z > z0 - R && p.z < z1 + R) {
@@ -375,7 +399,8 @@ export function createScene(container, opts) {
     Object.values(hotEls).forEach(({ el: b, v }) => {
       tmp.copy(v).project(camera);
       const hidden = tmp.z > 1 || tmp.z < -1;
-      b.style.visibility = hidden ? 'hidden' : 'visible';
+      const lowCam = camera.position.y < 5.5 && b.dataset.id !== activeId;
+      b.style.visibility = (hidden || lowCam) ? 'hidden' : 'visible';
       b.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * w}px, ${(-tmp.y * 0.5 + 0.5) * h}px) translate(-50%, -50%)`;
     });
   }
@@ -404,7 +429,7 @@ export function createScene(container, opts) {
     if (mode === 'orbit') {
       controls.update();
       controls.target.x = clamp(controls.target.x, -14, 14);
-      controls.target.z = clamp(controls.target.z, -12, 14);
+      controls.target.z = clamp(controls.target.z, -12, 17);
       controls.target.y = clamp(controls.target.y, 0, 6);
       if (camera.position.y < 0.5) camera.position.y = 0.5;
     }
@@ -421,6 +446,13 @@ export function createScene(container, opts) {
         m.position.y = y0 + k * h;
         m.scale.setScalar(0.7 + k * 1.0);
         m.material.opacity = 0.32 * (1 - k);
+      });
+    }
+    {
+      const t = now / 1000;
+      twinkle.forEach((m, i) => {
+        const k = (0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * (2.2 + i * 0.7) + i * 2.1))) * twScale;
+        m.color.setRGB(1.0 * k, 0.95 * k, 0.78 * k);
       });
     }
     updateConfetti(dt);

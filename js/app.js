@@ -1,6 +1,7 @@
-import { loadConfig, loadFonts } from './content.js';
+import { loadConfig, applyTheme } from './content.js';
 
 const C = await loadConfig();
+applyTheme(C);
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -69,7 +70,7 @@ function initText() {
   $('#thTitle').textContent = C.thanks.title;
   $('#thMsg').textContent = C.thanks.message;
   $('#thSign').textContent = C.thanks.sign;
-  $('#siteFoot').textContent = `${C.org}. Kế hoạch truyền thông ${C.eventName}. ${C.team}.`;
+  $('#siteFoot').textContent = C.footer;
 }
 
 function initHero() {
@@ -148,47 +149,62 @@ document.addEventListener('keydown', e => {
 });
 
 /* ================= Moodboard ================= */
-function lightbox(src, cap) {
-  $('#lightboxImg').src = src; $('#lightboxImg').alt = cap || '';
-  $('#lightboxCap').textContent = cap || '';
-  $('#lightbox').showModal();
+const viewer = { items: [], i: 0 };
+function showViewer() {
+  const it = viewer.items[viewer.i];
+  $('#lightboxImg').src = it.src; $('#lightboxImg').alt = it.caption || '';
+  $('#lightboxCap').textContent = it.caption || '';
+  $('#lbCount').textContent = viewer.items.length > 1 ? `${viewer.i + 1} / ${viewer.items.length}` : '';
+  $('#lbPrev').hidden = $('#lbNext').hidden = viewer.items.length < 2;
 }
-function imageFigure(item) {
+function openViewer(items, i = 0) {
+  viewer.items = items; viewer.i = i; showViewer();
+  const d = $('#lightbox'); if (!d.open) d.showModal();
+}
+const moveViewer = d => { viewer.i = (viewer.i + d + viewer.items.length) % viewer.items.length; showViewer(); };
+function imageFigure(item, group) {
   const fig = el('figure');
-  const img = el('img', { src: item.src, alt: item.caption || '', loading: 'lazy' });
-  img.addEventListener('click', () => lightbox(item.src, item.caption));
+  const img = el('img', { src: item.src, alt: item.caption || '', loading: 'lazy', tabindex: '0' });
+  const open = () => openViewer(group, group.indexOf(item));
+  img.addEventListener('click', open);
+  img.addEventListener('keydown', e => { if (e.key === 'Enter') open(); });
   fig.appendChild(img);
   if (item.caption) fig.appendChild(el('figcaption', { class: 'cap' }, esc(item.caption)));
   return fig;
 }
 const placeholder = (title, hint) => el('div', { class: 'ph' }, `<b>${esc(title)}</b><span>${esc(hint)}</span>`);
 
+function fillGallery(host, items, hintTitle, hintText, n = 4) {
+  const group = items.filter(it => it.src);
+  if (group.length) group.forEach(it => host.appendChild(imageFigure(it, group)));
+  else for (let i = 0; i < n; i++) host.appendChild(placeholder(hintTitle, hintText));
+}
+
 function initMoodboard() {
   const m = C.moodboard;
-  const grid = $('#moodGrid');
-  if (m.images.length) m.images.forEach(it => grid.appendChild(imageFigure(it)));
-  else for (let i = 0; i < 6; i++) grid.appendChild(placeholder('Ảnh moodboard', 'Thêm ảnh trong trang quản trị, mục Moodboard'));
+  fillGallery($('#moodGrid'), m.images, 'Ảnh moodboard', 'Thêm ảnh trong trang quản trị, mục Moodboard', 6);
 
   const kv = $('#keyVisual');
   if (m.keyVisual.image) {
-    const f = imageFigure({ src: m.keyVisual.image, caption: m.keyVisual.caption });
-    kv.append(...f.childNodes);
+    const group = [{ src: m.keyVisual.image, caption: m.keyVisual.caption }];
+    kv.append(...imageFigure(group[0], group).childNodes);
   } else kv.appendChild(placeholder('Key visual', 'Thêm ảnh key visual trong trang quản trị'));
 
   const pal = $('#palette');
   m.palette.forEach(p => pal.appendChild(el('div', { class: 'swatch' },
     `<i style="background:${esc(p.hex)}"></i><div><b>${esc(p.name)} ${esc(p.hex)}</b><span>${esc(p.role)}</span></div>`)));
 
-  loadFonts(m.fonts.map(f => f.family));
-  const fl = $('#fontList');
-  m.fonts.forEach(f => fl.appendChild(el('div', { class: 'fontitem' },
-    `<small>${esc(f.role)}, font ${esc(f.family)}</small><p class="big" style="font-family:'${esc(f.family)}',serif">${esc(f.sample)}</p>`)));
-
-  const els = $('#elementGrid');
-  if (m.elements.length) m.elements.forEach(it => els.appendChild(imageFigure(it)));
-  else for (let i = 0; i < 6; i++) els.appendChild(placeholder('Element', 'Lồng đèn, hoa đào, hoa mai, họa tiết'));
+  fillGallery($('#fontTitle'), m.fonts.title, 'Font chữ tiêu đề', 'Tải ảnh thiết kế font trong trang quản trị, ghi tên font ở chú thích', 2);
+  fillGallery($('#fontBody'), m.fonts.body, 'Font chữ nội dung', 'Tải ảnh thiết kế font trong trang quản trị, ghi tên font ở chú thích', 2);
+  fillGallery($('#elementGrid'), m.elements, 'Element', 'Lồng đèn, hoa đào, hoa mai, họa tiết', 6);
 }
 $('#lightboxClose').onclick = () => $('#lightbox').close();
+$('#lbPrev').onclick = () => moveViewer(-1);
+$('#lbNext').onclick = () => moveViewer(1);
+$('#lightbox').addEventListener('keydown', e => { if (e.key === 'ArrowLeft') moveViewer(-1); if (e.key === 'ArrowRight') moveViewer(1); });
+(() => { let x0 = null; const lb = $('#lightbox');
+  lb.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend', e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 50 && viewer.items.length > 1) moveViewer(dx < 0 ? 1 : -1); }); })();
 $('#lightbox').addEventListener('click', e => { if (e.target.id === 'lightbox') e.currentTarget.close(); });
 
 /* ================= Không gian 3D ================= */
@@ -206,7 +222,7 @@ async function initSpace() {
   try {
     await Promise.race([
       Promise.all([
-        document.fonts.load('700 40px "Cormorant Garamond"', 'Xuân Quê hương Đinh Mùi ĐẠI SỨ QUÁN'),
+        ...C.theme._families.map(f => document.fonts.load(`700 40px "${f}"`, 'Xuân Quê hương Đinh Mùi ĐẠI SỨ QUÁN')),
         document.fonts.load('700 40px "Be Vietnam Pro"', 'ĐẠI SỨ QUÁN VIỆT NAM ALGÉRIE')
       ]),
       new Promise(r => setTimeout(r, 2500))
@@ -255,20 +271,26 @@ async function initSpace() {
 
   function handleSelect(id) {
     activeId = id;
-    $$('#legendList button').forEach(b => b.classList.toggle('on', b.dataset.zone === id));
+    const isFood = !!id && id.startsWith('food:');
+    $$('#legendList button').forEach(b => b.classList.toggle('on', b.dataset.zone === (isFood ? 'buffet' : id)));
     if (!id) { panel.hidden = true; return; }
-    const z = zones.find(x => x.id === id);
-    $('#panelNo').textContent = `Khu ${z.no} trên ${zones.length}`;
-    $('#panelName').textContent = z.name;
-    $('#panelDesc').textContent = z.desc;
-    $('#panelPlan').textContent = z.plan;
-    const refs = $('#panelRefs'); refs.innerHTML = '';
-    (z.refs || []).slice(0, 3).forEach(src => {
-      const im = el('img', { src, alt: `Ảnh tham khảo ${z.name}`, loading: 'lazy' });
-      im.onerror = () => im.remove();
-      im.onclick = () => lightbox(src, `Ảnh tham khảo, ${z.name}`);
-      refs.appendChild(im);
-    });
+    const food = $('#panelFood');
+    if (isFood) {
+      const f = C.scene.foods[Number(id.slice(5))] || {};
+      const bz = zones.find(z => z.id === 'buffet');
+      $('#panelNo').textContent = `Khu ${bz ? bz.no : ''}, buffet món Việt`;
+      $('#panelName').textContent = f.name || 'Món ăn';
+      $('#panelDesc').textContent = f.note || 'Xin mời!';
+      $('#panelPlan').hidden = true;
+      if (f.image) { food.src = f.image; food.alt = f.name || ''; food.hidden = false; } else food.hidden = true;
+    } else {
+      const z = zones.find(x => x.id === id);
+      $('#panelNo').textContent = `Khu ${z.no} trên ${zones.length}`;
+      $('#panelName').textContent = z.name;
+      $('#panelDesc').textContent = z.desc;
+      $('#panelPlan').textContent = z.plan; $('#panelPlan').hidden = !z.plan;
+      food.hidden = true;
+    }
     panel.hidden = false; panel.scrollTop = 0;
     $('#spaceHint').classList.add('gone');
     if (isMobile()) legend.classList.add('closed');
@@ -307,7 +329,8 @@ async function initSpace() {
   $('#panelClose').onclick = () => { stopTour(); api.selectZone(null, { fly: false }); };
   const step = d => {
     stopTour();
-    const i = zones.findIndex(z => z.id === activeId);
+    const cur = activeId && activeId.startsWith('food:') ? 'buffet' : activeId;
+    const i = zones.findIndex(z => z.id === cur);
     api.selectZone(zones[(i + d + zones.length) % zones.length].id);
   };
   $('#panelPrev').onclick = () => step(-1);

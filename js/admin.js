@@ -1,4 +1,4 @@
-import { loadConfig } from './content.js';
+import { loadConfig, FONT_OPTIONS } from './content.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 let S = null;                       // bản nội dung đang chỉnh
@@ -98,7 +98,7 @@ const imageRow = (it, rerender) => h('div', {}, imgField('Ảnh', it, 'src', rer
 /* ---------- Các tab ---------- */
 const TABS = [
   ['general', 'Chung'], ['content', 'Nội dung trình bày'], ['docs', 'Tài liệu'], ['proposal', 'Proposal'],
-  ['mood', 'Moodboard'], ['scene', 'Không gian 3D'], ['zones', 'Các khu 3D'], ['thanks', 'Lời cảm ơn']
+  ['mood', 'Moodboard'], ['theme', 'Chữ và màu'], ['scene', 'Không gian 3D'], ['zones', 'Các khu 3D'], ['thanks', 'Lời cảm ơn']
 ];
 const FONTS = ['Be Vietnam Pro', 'Cormorant Garamond', 'Playfair Display', 'Lora', 'Noto Serif', 'Merriweather', 'Montserrat', 'Roboto', 'Nunito', 'Quicksand', 'Dancing Script', 'Pacifico', 'Yeseva One'];
 
@@ -161,12 +161,57 @@ const VIEWS = {
         hex.oninput = () => { it.hex = hex.value; if (/^#[0-9a-f]{6}$/i.test(hex.value)) cp.value = hex.value; touch(); };
         return h('div', {}, h('div', { class: 'grid2' }, field('Tên màu', it, 'name'), h('label', {}, 'Mã màu', h('div', { class: 'row2' }, cp, hex))), field('Dùng cho', it, 'role'));
       }, [h('button', { class: 'b b-red b-sm', type: 'button', onclick: () => { m.palette.push({ name: 'Màu mới', hex: '#CCCCCC', role: '' }); touch(); render(); } }, 'Thêm màu')], render),
-      h('h3', {}, 'Font chữ'),
-      h('datalist', { id: 'fontlist' }, FONTS.map(f => h('option', { value: f }))),
-      list(m.fonts, it => { const f = field('Tên font Google (gõ hoặc chọn)', it, 'family'); $('input', f).setAttribute('list', 'fontlist'); return h('div', {}, field('Vai trò', it, 'role'), f, field('Câu mẫu', it, 'sample')); },
-        [h('button', { class: 'b b-red b-sm', type: 'button', onclick: () => { m.fonts.push({ role: 'Font mới', family: 'Lora', sample: 'Xuân Quê hương' }); touch(); render(); } }, 'Thêm font')], render),
+      h('h3', {}, 'Font'),
+      h('p', { class: 'hint' }, 'Tải ảnh thiết kế font từ Canva. Ghi tên font vào ô Chú thích, tên này hiện ngay dưới ảnh trên trang web.'),
+      h('b', {}, 'Chữ tiêu đề'),
+      list(m.fonts.title, it => imageRow(it, render), [addImagesBtn(m.fonts.title, 'Thêm ảnh font tiêu đề', render)], render),
+      h('b', {}, 'Chữ nội dung'),
+      list(m.fonts.body, it => imageRow(it, render), [addImagesBtn(m.fonts.body, 'Thêm ảnh font nội dung', render)], render),
       h('h3', {}, 'Elements'),
       list(m.elements, it => imageRow(it, render), [addImagesBtn(m.elements, 'Thêm element', render)], render)];
+  },
+  theme() {
+    const t = S.theme;
+    const sel = (label, kind, key) => {
+      const sl = h('select', {}, FONT_OPTIONS[kind].map(o => h('option', { value: o.label }, o.label + (o.custom ? ' (tải file font)' : ''))));
+      sl.value = t[key]; sl.onchange = () => { t[key] = sl.value; touch(); };
+      return h('label', {}, label, sl);
+    };
+    const colorRow = (label, key) => {
+      const cp = h('input', { type: 'color' }); const hex = h('input', { type: 'text' });
+      cp.value = /^#[0-9a-f]{6}$/i.test(t.colors[key]) ? t.colors[key] : '#000000'; hex.value = t.colors[key] || '';
+      cp.oninput = () => { t.colors[key] = cp.value.toUpperCase(); hex.value = t.colors[key]; touch(); };
+      hex.oninput = () => { t.colors[key] = hex.value; if (/^#[0-9a-f]{6}$/i.test(hex.value)) cp.value = hex.value; touch(); };
+      return h('label', {}, label, h('div', { class: 'row2' }, cp, hex));
+    };
+    return [h('h2', {}, 'Chữ và màu'),
+      h('h3', {}, 'Font chữ'),
+      h('p', { class: 'hint' }, 'Font tiêu đề áp dụng cho mọi tiêu đề, tên chương trình, banner, biển và câu đối trong 3D. Font nội dung áp dụng cho đoạn mô tả và nút.'),
+      sel('Font tiêu đề', 'heading', 'headingFont'), sel('Font nội dung', 'body', 'bodyFont'),
+      h('h3', {}, 'File font cần tải lên'),
+      h('p', { class: 'hint' }, 'Amarego, Assox, Best Swashed và Beautique Display Condensed không có trên Google Fonts, nên cần tải file font (.ttf, .otf hoặc .woff2) lên đây. Chưa tải thì web tạm dùng font thay thế. Chọn bản font có hỗ trợ tiếng Việt có dấu.'),
+      ...t.customFonts.map(cf => h('div', { class: 'item' },
+        h('div', {}, h('b', {}, cf.name), h('small', { class: 'hint' }, cf.file || ' Chưa tải file')),
+        h('div', { class: 'ctrl' },
+          h('button', { class: 'b b-line b-sm', type: 'button', onclick: () => pickFiles('.ttf,.otf,.woff,.woff2', false, async ([f]) => {
+            if (!f) return;
+            const buf = new Uint8Array(await f.arrayBuffer()); let bin = ''; buf.forEach(b => { bin += String.fromCharCode(b); });
+            const ext = (f.name.split('.').pop() || 'ttf').toLowerCase();
+            const path = `assets/fonts/${slug(cf.name)}.${ext}`;
+            pending.set(path, { b64: btoa(bin), dataUrl: '' }); cf.file = path; touch(); render();
+          }) }, cf.file ? 'Đổi file' : 'Tải file font'),
+          cf.file ? h('button', { class: 'b b-line b-sm b-del', type: 'button', onclick: () => { cf.file = ''; touch(); render(); } }, 'Bỏ') : ''))),
+      h('h3', {}, 'Màu chữ'),
+      h('div', { class: 'grid2' },
+        colorRow('Tên chương trình trên thanh trên', 'brand'), colorRow('Tiêu đề trang mở đầu', 'heroTitle'),
+        colorRow('Dòng chữ nhỏ trang mở đầu', 'heroText'), colorRow('Tiêu đề các trang', 'pageTitle'),
+        colorRow('Tiêu đề từng mục', 'sectionTitle'), colorRow('Đoạn mô tả, nội dung', 'body'),
+        colorRow('Tiêu đề trang cảm ơn', 'thanksTitle'), colorRow('Nội dung trang cảm ơn', 'thanksText'),
+        colorRow('Chân trang', 'footer')),
+      h('h3', {}, 'Màu chữ trong 3D'),
+      h('div', { class: 'grid2' },
+        colorRow('Tên trên banner gian hàng', 'bannerTitle'), colorRow('Dòng phụ trên banner', 'bannerSub'),
+        colorRow('Chữ câu đối', 'couplet'), colorRow('Chữ trên biển, bảng', 'sign'))];
   },
   scene() {
     const sc = S.scene, e = sc.embassy;
@@ -178,6 +223,8 @@ const VIEWS = {
         h('label', {}, 'Chiều rộng phông (mét)', (() => { const i = h('input', { type: 'number', step: '0.1' }); i.value = sc.backdropSize[0]; i.oninput = () => { sc.backdropSize[0] = Number(i.value); touch(); }; return i; })()),
         h('label', {}, 'Chiều cao phông (mét)', (() => { const i = h('input', { type: 'number', step: '0.1' }); i.value = sc.backdropSize[1]; i.oninput = () => { sc.backdropSize[1] = Number(i.value); touch(); }; return i; })())),
       check('Dùng màn hình LED (phông tự phát sáng)', sc, 'useLed'),
+      h('h3', {}, 'Chữ trên cổng chào'),
+      field('Dòng chữ uốn theo vòm cổng (in hoa)', sc, 'gateText'),
       h('h3', {}, 'Bảng hiệu Đại sứ quán'),
       imgField('Quốc huy', sc, 'emblemImage', render),
       field('Tên tiếng Việt (in hoa)', e, 'nameVi'), field('Tên tiếng Pháp (in hoa)', e, 'nameFr', { area: true }), field('Địa chỉ', e, 'address'),
@@ -185,16 +232,13 @@ const VIEWS = {
       h('p', { class: 'hint' }, 'Mỗi vế viết cách nhau bằng dấu cách, mỗi từ nằm một dòng dọc.'),
       field('Vế trái', sc.couplets, 'left'), field('Vế phải', sc.couplets, 'right'),
       h('h3', {}, 'Các món ở khu buffet'),
-      ...sc.foods.map((f, i) => h('div', { class: 'item' }, h('div', {}, field(`Bàn ${i + 1}, tên món`, f, 'name'), imgField('Ảnh món', f, 'image', render)), h('div'))),
+      ...sc.foods.map((f, i) => h('div', { class: 'item' }, h('div', {}, field(`Bàn ${i + 1}, tên món`, f, 'name'), field('Câu chú thích khi bấm vào bàn', f, 'note'), imgField('Ảnh món (hiện trong khung khi bấm vào bàn)', f, 'image', render)), h('div'))),
       h('p', { class: 'hint' }, 'Chỉnh xong phần 3D, xuất bản rồi tải lại trang web để thấy thay đổi.')];
   },
   zones() {
-    return [h('h2', {}, 'Các khu 3D'), h('p', { class: 'hint' }, 'Chữ trong bảng giải thích khi bấm vào từng khu. Mỗi khu gắn tối đa 3 ảnh tham khảo.'),
+    return [h('h2', {}, 'Các khu 3D'), h('p', { class: 'hint' }, 'Chữ trong bảng giải thích khi bấm vào từng khu.'),
       ...S.zones.map(z => h('details', { class: 'zone' }, h('summary', {}, `${z.no}. ${z.name}`),
-        h('div', { class: 'in' }, field('Tên khu', z, 'name'), field('Mô tả', z, 'desc', { area: true }), field('Gợi ý triển khai', z, 'plan', { area: true }),
-          h('b', {}, 'Ảnh tham khảo'),
-          list(z.refs, (u, i) => h('div', { class: 'imgbox' }, h('div', { class: 'thumb', style: `background-image:url("${src(u)}")` }), h('small', {}, u)),
-            z.refs.length < 3 ? [addImagesBtn(z.refs, 'Thêm ảnh', render, p => p)] : [], () => { render(); })))) ];
+        h('div', { class: 'in' }, field('Tên khu', z, 'name'), field('Mô tả', z, 'desc', { area: true }), field('Gợi ý triển khai', z, 'plan', { area: true })))) ];
   },
   thanks() {
     return [h('h2', {}, 'Lời cảm ơn'), field('Tiêu đề', S.thanks, 'title'), field('Nội dung', S.thanks, 'message', { area: true }), field('Ký tên', S.thanks, 'sign')];
@@ -224,7 +268,7 @@ async function connect(owner, repo, token) {
   if (!j.permissions || !j.permissions.push) throw new Error('Token chưa có quyền ghi (Contents, Read and write)');
   gh = { owner, repo, token, branch: j.default_branch };
   $('#status').textContent = `Đã kết nối ${owner}/${repo}`; $('#status').classList.add('ok');
-  $('#btnConnect').textContent = 'Đổi kết nối';
+  $('#btnConnect').hidden = true;
 }
 async function putFile(path, b64, message) {
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -287,10 +331,6 @@ $('#cOk').onclick = async () => {
   } catch (e) { $('#cMsg').textContent = e.message; }
 };
 $('#btnPublish').onclick = publish;
-$('#btnExport').onclick = () => {
-  const a = h('a', { href: URL.createObjectURL(new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' })), download: 'content.json' });
-  a.click();
-};
 window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
 
 /* ---------- Khởi động ---------- */
