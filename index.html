@@ -95,9 +95,13 @@
         <figure class="vcue-key" id="keyVisual"></figure>
         <div class="vcue-side">
           <div class="palette" id="palette"></div>
-          <div class="fontlist" id="fontList"></div>
         </div>
       </div>
+      <h3 class="sec">Font</h3>
+      <h4 class="sub">Chữ tiêu đề</h4>
+      <div class="fontgrid" id="fontTitle"></div>
+      <h4 class="sub">Chữ nội dung</h4>
+      <div class="fontgrid" id="fontBody"></div>
       <h3 class="sec">Elements</h3>
       <div class="elements" id="elementGrid"></div>
       <div class="pager">
@@ -138,7 +142,7 @@
         <h3 id="panelName"></h3>
         <p id="panelDesc"></p>
         <p class="panel-plan" id="panelPlan"></p>
-        <div class="panel-refs" id="panelRefs"></div>
+        <img class="panel-food" id="panelFood" alt="" hidden>
         <div class="panel-nav">
           <button type="button" class="btn btn-line" id="panelPrev">Khu trước</button>
           <button type="button" class="btn btn-line" id="panelNext">Khu sau</button>
@@ -171,12 +175,15 @@
 
 </main>
 
-<footer class="sitefoot"><span id="siteFoot"></span> <a href="admin.html" class="adminlink">Quản trị</a></footer>
+<footer class="sitefoot"><span id="siteFoot"></span> <a href="admin.html" class="adminlink">Quản trị</a>.</footer>
 
 <dialog class="lightbox" id="lightbox">
   <button type="button" id="lightboxClose" aria-label="Đóng ảnh">Đóng</button>
+  <button type="button" class="lb-nav lb-prev" id="lbPrev" aria-label="Ảnh trước">&lsaquo;</button>
   <img id="lightboxImg" alt="">
+  <button type="button" class="lb-nav lb-next" id="lbNext" aria-label="Ảnh sau">&rsaquo;</button>
   <p id="lightboxCap"></p>
+  <span class="lb-count" id="lbCount"></span>
 </dialog>
 
 <script type="module" src="js/app.js"></script>

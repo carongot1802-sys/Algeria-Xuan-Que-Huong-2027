@@ -12,7 +12,7 @@ Không mở index.html bằng cách bấm đúp trên máy, vì trình duyệt s
 
 Mở địa chỉ trang web rồi thêm /admin.html (hoặc bấm chữ Quản trị ở cuối trang). Ở đó chỉnh được chữ, tài liệu, link Canva hoặc ảnh slide, ảnh moodboard, bảng màu, font, elements, phông nền 3D, bảng hiệu Đại sứ quán, câu đối, món ăn buffet, mô tả từng khu và lời cảm ơn. Thêm, bớt, đổi thứ tự ảnh đều làm bằng nút, không cần sửa code.
 
-Để xuất bản thay đổi cần một token GitHub. Vào github.com, bấm ảnh đại diện, Settings, kéo xuống Developer settings, Personal access tokens, Fine-grained tokens, Generate new token. Chọn Only select repositories và chọn đúng repo này. Ở mục Repository permissions, đặt Contents thành Read and write. Tạo token rồi sao chép ngay. Trong trang quản trị bấm Kết nối GitHub, điền tên tài khoản, tên repo, dán token, rồi bấm Kết nối. Sau khi chỉnh xong bấm Xuất bản, khoảng một phút sau trang web cập nhật. Chỉ người có token mới xuất bản được, nên đừng chia sẻ token.
+Để xuất bản thay đổi cần một token GitHub. Vào github.com, bấm ảnh đại diện, Settings, kéo xuống Developer settings, Personal access tokens, Fine-grained tokens, Generate new token. Chọn Only select repositories và chọn đúng repo này. Ở mục Repository permissions, đặt Contents thành Read and write. Tạo token rồi sao chép ngay. Trong trang quản trị bấm Kết nối GitHub, điền tên tài khoản, tên repo, dán token, rồi bấm Kết nối. Sau khi kết nối thành công, nút kết nối tự ẩn đi. Sau khi chỉnh xong bấm Xuất bản, khoảng một phút sau trang web cập nhật. Chỉ người có token mới xuất bản được, nên đừng chia sẻ token.
 
 ## Điều khiển trong không gian 3D
 
