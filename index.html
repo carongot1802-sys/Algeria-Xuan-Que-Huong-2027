@@ -104,6 +104,11 @@
       <div class="fontgrid" id="fontBody"></div>
       <h3 class="sec">Elements</h3>
       <div class="elements" id="elementGrid"></div>
+      <h3 class="sec">Sản phẩm truyền thông</h3>
+      <h4 class="sub">Phông nền sân khấu</h4>
+      <div class="prodgrid" id="prodBackdrop"></div>
+      <h4 class="sub" id="prodBroTitle">Brochure</h4>
+      <div class="prodgrid two" id="prodBrochure"></div>
       <div class="pager">
         <a class="btn btn-line" href="#/proposal">Quay lại slide</a>
         <a class="btn btn-red" href="#/khong-gian">Tiếp tục tới không gian 3D</a>
@@ -150,6 +155,7 @@
       </aside>
 
       <div class="joy" id="joy" hidden><i id="joyKnob"></i></div>
+      <button type="button" class="held-chip" id="heldChip" hidden>Đang cầm brochure. Bấm để xem</button>
       <p class="space-hint" id="spaceHint">Kéo để xoay, cuộn để phóng to, giữ chuột phải để di chuyển. Bấm Đi bộ rồi dùng phím W A S D hoặc bấm vào sàn để đi tới đó.</p>
     </div>
     <div class="space-foot">
@@ -175,7 +181,7 @@
 
 </main>
 
-<footer class="sitefoot"><span id="siteFoot"></span> <a href="admin.html" class="adminlink">Quản trị</a>.</footer>
+<footer class="sitefoot"><span id="siteFoot"></span></footer>
 
 <dialog class="lightbox" id="lightbox">
   <button type="button" id="lightboxClose" aria-label="Đóng ảnh">Đóng</button>
@@ -184,6 +190,27 @@
   <button type="button" class="lb-nav lb-next" id="lbNext" aria-label="Ảnh sau">&rsaquo;</button>
   <p id="lightboxCap"></p>
   <span class="lb-count" id="lbCount"></span>
+</dialog>
+
+<dialog class="locdlg" id="locDlg">
+  <div class="loc-card">
+    <button type="button" class="loc-x" id="locClose" aria-label="Đóng">Đóng</button>
+    <div class="loc-env" id="locEnv"><i></i></div>
+    <p class="loc-title" id="locTitle"></p>
+    <p class="loc-msg" id="locMsg"></p>
+    <button type="button" class="btn btn-gold" id="locAgain">Hái thêm một lộc</button>
+  </div>
+</dialog>
+
+<dialog class="lightbox bro" id="broDlg">
+  <button type="button" id="broClose" aria-label="Đóng">Đóng</button>
+  <div class="bro-stage" id="broStage"><div class="bro-flip" id="broFlip"><img class="bro-f" id="broImgF" alt=""><img class="bro-b" id="broImgB" alt=""></div></div>
+  <p id="broLabel"></p>
+  <div class="bro-actions">
+    <button type="button" class="btn btn-line" id="broTurn">Lật sang mặt kia</button>
+    <button type="button" class="btn btn-gold" id="broTake">Cầm theo brochure</button>
+  </div>
+  <p class="bro-note" id="broNote"></p>
 </dialog>
 
 <script type="module" src="js/app.js"></script>
