@@ -112,6 +112,25 @@ export function buildWorld(cfg, env) {
     return flatPlane(t, w, h, x, y, z, parent, rotY, double);
   }
 
+  function signPlane2(vi, fr, w, h, bg, fg, x, y, z, parent = root, rotY = 0) {
+    const fgc = fg === '#f3dca3' ? TC.sign : fg;
+    const t = canvasTex(512, Math.round(512 * h / w), (g, cw, ch) => {
+      g.fillStyle = bg; g.fillRect(0, 0, cw, ch);
+      g.strokeStyle = fgc; g.globalAlpha = 0.7; g.lineWidth = 6; g.strokeRect(10, 10, cw - 20, ch - 20); g.globalAlpha = 1;
+      g.fillStyle = fgc; g.textAlign = 'center'; g.textBaseline = 'middle';
+      let size = ch * 0.42;
+      g.font = `bold ${size}px ${FD}`;
+      while (g.measureText(vi).width > cw * 0.86 && size > 12) { size -= 2; g.font = `bold ${size}px ${FD}`; }
+      g.fillText(vi, cw / 2, ch * (fr ? 0.36 : 0.5));
+      if (fr) {
+        let s2 = ch * 0.27; g.globalAlpha = 0.92; g.font = `italic ${s2}px ${FD}`;
+        while (g.measureText(fr).width > cw * 0.82 && s2 > 10) { s2 -= 2; g.font = `italic ${s2}px ${FD}`; }
+        g.fillText(fr, cw / 2, ch * 0.74); g.globalAlpha = 1;
+      }
+    });
+    return flatPlane(t, w, h, x, y, z, parent, rotY, false);
+  }
+
   /* ---------- Đèn chiếu thật (bật mạnh buổi tối, giảm ban ngày) ---------- */
   function spot(x, y, z, tx, ty, tz, color, dusk, day, angle = 0.7, pen = 0.5) {
     const l = new THREE.SpotLight(color, dusk, 0, angle, pen, 2);
@@ -201,7 +220,7 @@ export function buildWorld(cfg, env) {
       mesh(G('IcosahedronGeometry', r, 1), M(i % 2 ? 0x3f7a45 : 0x2f6b3f), a, b, c, g));
     circ(x, z, 0.5);
   }
-  function blossomTree(x, z, color, parent = root, s = 1, solid = true) {
+  function blossomTree(x, z, color, parent = root, s = 1, solid = true, lixi = 0) {
     const g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(s); parent.add(g);
     cyl(0.4, 0.3, 0.5, M(COL.redDeep), 0, 0.25, 0, g, 14);
     cyl(0.4, 0.4, 0.03, M(COL.gold), 0, 0.48, 0, g, 14);
@@ -220,6 +239,19 @@ export function buildWorld(cfg, env) {
       const a = rnd() * Math.PI * 2, r = 0.55 + rnd() * 0.5, y = 2.0 + rnd() * 0.8;
       box(0.07, 0.17, 0.012, M(COL.red), Math.cos(a) * r, y, Math.sin(a) * r, g);
       sph(0.016, M(COL.gold), Math.cos(a) * r, y + 0.04, Math.sin(a) * r + 0.008, g, 5, 4);
+    }
+    if (lixi > 0) {
+      const strMat = M(0xe3b04b), envs = [M(0xd9232d), M(0xb3151f), M(0xe8412d)], trim = M(0xf0c332);
+      for (let i = 0; i < lixi; i++) {
+        const a = (i / lixi) * Math.PI * 2 * 3.1 + rnd() * 0.5, r = 0.35 + rnd() * 0.75, top = 2.85 - rnd() * 0.75 - (r < 0.5 ? 0.35 : 0);
+        const ex = Math.cos(a) * r, ez = Math.sin(a) * r, len = 0.16 + rnd() * 0.2;
+        box(0.006, len, 0.006, strMat, ex, top - len / 2, ez, g);
+        const ey = top - len - 0.1;
+        const env = box(0.1, 0.17, 0.012, envs[i % 3], ex, ey, ez, g); env.rotation.y = rnd() * Math.PI;
+        const cy = Math.cos(env.rotation.y) * 0.008, sy = -Math.sin(env.rotation.y) * 0.008;
+        box(0.1, 0.012, 0.014, trim, ex, ey + 0.07, ez, g).rotation.y = env.rotation.y;
+        sph(0.022, trim, ex + cy, ey, ez + sy, g, 6, 4);
+      }
     }
     g.updateWorldMatrix(true, false);
     const v = new THREE.Vector3();
@@ -385,11 +417,22 @@ export function buildWorld(cfg, env) {
   box(0.36, 0.05, 0.18, M(0x7a0f18), 0, 1.3, 0.04, speaker);
   sph(0.15, M(0xe2b48c), 0, 1.5, 0, speaker, 12, 10);
   const silver = M(0xd5d9e0, { metalness: 0.85, roughness: 0.25 });
-  [-0.06, 0.06].forEach(x => { const r = new THREE.Mesh(G('TorusGeometry', 0.04, 0.008, 6, 14), silver); r.position.set(x, 1.52, 0.14); speaker.add(r); });
-  cyl(0.004, 0.004, 0.04, silver, 0, 1.53, 0.14, speaker, 4).rotation.z = Math.PI / 2;
-  [-0.1, 0.1].forEach(x => { const a = cyl(0.004, 0.004, 0.12, silver, x, 1.52, 0.08, speaker, 4); a.rotation.x = Math.PI / 2; });
+  // kính gọng bạc, mắt kính hình chữ nhật
+  const lensMat = new THREE.MeshStandardMaterial({ color: 0xdfeaf2, transparent: true, opacity: 0.28, roughness: 0.1 });
+  [-0.062, 0.062].forEach(x => {
+    const fz = 0.141, fw = 0.082, fh = 0.054, t = 0.007;
+    box(fw, t, t, silver, x, 1.52 + fh / 2, fz, speaker); box(fw, t, t, silver, x, 1.52 - fh / 2, fz, speaker);
+    box(t, fh, t, silver, x - fw / 2, 1.52, fz, speaker); box(t, fh, t, silver, x + fw / 2, 1.52, fz, speaker);
+    box(fw, fh, 0.002, lensMat, x, 1.52, fz, speaker);
+  });
+  box(0.05, 0.007, 0.007, silver, 0, 1.538, 0.141, speaker);
+  [-0.106, 0.106].forEach(x => { const a = box(0.006, 0.006, 0.1, silver, x, 1.538, 0.09, speaker); a.rotation.y = x < 0 ? 0.1 : -0.1; });
   box(0.34, 0.03, 0.2, M(COL.gold), 0, 1.27, 0.03, speaker);
-  sph(0.155, M(0x1c1c1c), 0, 1.56, -0.02, speaker, 12, 6).scale.set(1, 0.6, 1);
+  // tóc đen ôm tròn đầu, mái hơi phủ trán
+  const hairMat = M(0x141414, { roughness: 0.9 });
+  sph(0.166, hairMat, 0, 1.535, -0.032, speaker, 16, 12).scale.set(1.0, 0.98, 1.02);
+  const fr = sph(0.15, hairMat, 0, 1.6, 0.045, speaker, 14, 8); fr.scale.set(1.02, 0.55, 0.8);
+  [-0.15, 0.15].forEach(x => sph(0.05, hairMat, x, 1.5, -0.02, speaker, 8, 6).scale.set(0.5, 1.1, 1.1));
   const armL = cyl(0.05, 0.05, 0.5, M(0xb3151f), -0.2, 1.0, 0.12, speaker, 8); armL.rotation.x = -0.7;
   const armR = cyl(0.05, 0.05, 0.5, M(0xb3151f), 0.2, 1.0, 0.12, speaker, 8); armR.rotation.x = -0.7;
   sph(0.045, M(0xe2b48c), -0.2, 0.82, 0.3, speaker, 8, 6); sph(0.045, M(0xe2b48c), 0.2, 0.82, 0.3, speaker, 8, 6);
@@ -502,6 +545,12 @@ export function buildWorld(cfg, env) {
     [0xf2a5b8, 0xf0c332, 0xd9232d, 0xf2a5b8, 0xf0c332].forEach((c, i) => sph(0.07, M(c), -1.1 + Math.cos(i * 1.3) * 0.1, 1.33 + (i % 2) * 0.05, Math.sin(i * 1.3) * 0.08, g, 8, 6));
     box(0.5, 0.04, 0.34, M(COL.white), -0.2, 1.04, 0.05, g);
     for (let i = 0; i < 4; i++) box(0.22, 0.012, 0.15, M(COL.cream), 0.3 + i * 0.26, 1.03 + (i % 2) * 0.006, 0.12, g);
+    // chồng brochure trên bàn
+    const brGeo = G('BoxGeometry', 0.42, 0.007, 0.3);
+    for (let i = 0; i < 7; i++) { const sh = new THREE.Mesh(brGeo, M(i % 2 ? 0xf4efe3 : 0xffffff)); sh.position.set(-0.78 + i * 0.001, 1.03 + i * 0.007, 0.14); sh.rotation.y = (i - 3) * 0.03; sh.castShadow = true; g.add(sh); }
+    const brTopMat = new THREE.MeshStandardMaterial({ color: 0xf4efe3, roughness: 0.6 });
+    const brTop = new THREE.Mesh(G('PlaneGeometry', 0.42, 0.3), brTopMat); brTop.rotation.x = -Math.PI / 2; brTop.rotation.z = -0.09; brTop.position.set(-0.78, 1.086, 0.14); g.add(brTop);
+    if (cfg.brochure && cfg.brochure.front) env.loadTexture(cfg.brochure.front, t => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; brTopMat.map = t; brTopMat.color.set(0xffffff); brTopMat.needsUpdate = true; });
     // hai lá cờ ở góc phải bàn, cờ Việt Nam bên trái cờ Algeria
     miniFlag(1.12, 1.02, 0.18, g, flagTex, 1.5);
     miniFlag(1.5, 1.02, 0.18, g, flagTexDZ, 1.5);
@@ -509,7 +558,10 @@ export function buildWorld(cfg, env) {
     box(3.6, 2.6, 0.08, M(COL.redDeep), 0, 1.3, -1.0, g);
     signPlane('CHÀO MỪNG QUÝ KHÁCH', 3.0, 0.5, '#7a0f18', '#f3dca3', 0, 1.9, -0.95, g, 0, false);
     // hai cây hai bên, câu đối treo trên cây
-    [-2.2, 2.2].forEach((x, i) => blossomTree(x, 0.2, i ? COL.mai : COL.pink, g, 0.95, false));
+    [-2.2, 2.2].forEach((x, i) => {
+      blossomTree(x, 0.2, i ? COL.mai : COL.pink, g, 0.95, false, 74);
+      signPlane((cfg.scene.lixiTitle || 'Hái lộc đầu xuân').toUpperCase(), 1.25, 0.26, '#7a0f18', '#f3dca3', x, 1.12, 0.62, g, 0, false);
+    });
     couplet('left', -2.85, 1.45, 0.75, g, 0, 0.72); couplet('right', 2.85, 1.45, 0.75, g, 0, 0.72);
     lantern(-1.1, 2.3, -0.7, 1.1, g); lantern(1.1, 2.3, -0.7, 1.1, g);
     point(0, 2.6, 1.2, 0xffe2b8, 16, 3, 7);
@@ -573,7 +625,7 @@ export function buildWorld(cfg, env) {
     const sp = cyl(0.015, 0.025, 0.14, M(0xdde6ee), x + 0.15, y + 0.17, z, parent, 6); sp.rotation.z = -0.9;
   }
 
-  function booth(kind, x, z, label) {
+  function booth(kind, x, z, label, labelFr) {
     const coffee = kind === 'coffee';
     const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = Math.PI / 2; root.add(g);
     const W = 3.8;
@@ -585,7 +637,7 @@ export function buildWorld(cfg, env) {
     [-W / 2, W / 2].forEach(px => cyl(0.06, 0.06, 3.3, M(COL.wood), px, 1.65, 0.9, g, 8));
     const aw = new THREE.Mesh(G('BoxGeometry', W + 0.5, 0.09, 2.1), new THREE.MeshStandardMaterial({ map: stripeTex, roughness: 0.9 }));
     aw.position.set(0, 3.3, -0.05); aw.castShadow = true; g.add(aw);
-    signPlane(label, 2.6, 0.5, coffee ? '#3b2418' : '#1f4a2c', '#f3dca3', 0, 3.65, 0.95, g, 0, false);
+    signPlane2(label, labelFr, 2.7, 0.7, coffee ? '#3b2418' : '#1f4a2c', '#f3dca3', 0, 3.72, 0.95, g, 0);
     couplet('left', -2.2, 2.35, 0.93, g, 0, 0.95); couplet('right', 2.2, 2.35, 0.93, g, 0, 0.95);
     [-1.82, 1.82].forEach(px => { for (let i = 0; i < 6; i++) sph(0.13 - i * 0.01, M(COL.pink), px, 3.15 - i * 0.17, 0.85, g, 8, 6); });
     [-0.9, 0.9].forEach(px => lantern(px, 3.1, 0.85, 0.8, g));
@@ -630,8 +682,9 @@ export function buildWorld(cfg, env) {
     });
     rect(x - 1.0, x + 0.95, z - W / 2, z + W / 2);
   }
-  booth('coffee', -10.4, 0.2, 'Gian cà phê');
-  booth('tea', -10.4, 6.4, 'Gian trà');
+  const BO = cfg.scene.booths || {};
+  booth('coffee', -10.4, 0.2, (BO.coffee || {}).vi || 'Gian cà phê', (BO.coffee || {}).fr || 'Stand de café');
+  booth('tea', -10.4, 6.4, (BO.tea || {}).vi || 'Gian trà', (BO.tea || {}).fr || 'Stand de thé');
   [[-10.4, -2.4, COL.pink], [-10.4, 3.3, COL.mai], [-10.4, 9.0, COL.pink]].forEach(([x, z, c]) => blossomTree(x, z, c, root, 1.1));
 
   /* ---------- Khu gói bánh chưng ---------- */
@@ -938,35 +991,6 @@ export function buildWorld(cfg, env) {
     // gờ đèn nhỏ chạy theo mép vòm
     for (let i = 0; i <= 40; i++) { const a = (i / 40) * Math.PI; sph(0.04, fairyMat, Math.cos(a) * 3.85, 1.7 + Math.sin(a) * 3.85, 0.24, g, 6, 4); }
 
-    // chữ 2027 có bóng đèn, bên trái chân cổng
-    const numTex = canvasTex(512, 256, (c, w, h) => {
-      c.fillStyle = '#5a0c12'; c.fillRect(0, 0, w, h);
-      c.strokeStyle = '#ffd98a'; c.lineWidth = 6; c.strokeRect(10, 10, w - 20, h - 20);
-      c.fillStyle = '#e3b04b'; c.textAlign = 'center'; c.textBaseline = 'middle';
-      c.font = `bold 190px ${FD}`; c.fillText('2027', w / 2, h / 2 + 8);
-    });
-    box(1.7, 0.86, 0.12, M(0x5a0c12), -3.9, 0.55, 0.45, g);
-    flatPlane(numTex, 1.6, 0.8, -3.9, 0.55, 0.515, g);
-    for (let i = 0; i < 14; i++) { const t = i / 13; sph(0.04, fairyMat, -4.75 + t * 1.7, 0.1, 0.52, g, 6, 4); sph(0.04, fairyMat, -4.75 + t * 1.7, 1.0, 0.52, g, 6, 4); }
-
-    // linh vật dê (Mùi) cầm câu chúc, bên phải chân cổng
-    const gt = new THREE.Group(); gt.position.set(3.9, 0, 0.6); g.add(gt);
-    const cream = M(0xf6e8cc), red = M(0xc41a24, { roughness: 0.6 });
-    const body = mesh(G('CapsuleGeometry', 0.3, 0.55, 6, 12), red, 0, 0.75, 0, gt); body.castShadow = true;
-    cyl(0.33, 0.33, 0.04, M(COL.gold), 0, 0.82, 0, gt, 16);
-    sph(0.34, cream, 0, 1.58, 0, gt, 16, 12);
-    [-0.2, 0.2].forEach(o => {
-      const hn = mesh(G('ConeGeometry', 0.06, 0.4, 8), M(COL.gold), o, 1.98, 0, gt); hn.rotation.z = o > 0 ? -0.5 : 0.5;
-      const e = sph(0.1, cream, o * 1.7, 1.6, -0.02, gt, 8, 6); e.scale.set(0.5, 1, 0.5); e.rotation.z = o > 0 ? -0.8 : 0.8;
-      sph(0.035, M(COL.dark), o * 0.55, 1.62, 0.31, gt, 6, 6);
-      sph(0.05, M(COL.pink), o * 1.2, 1.5, 0.3, gt, 6, 6);
-    });
-    const beard = mesh(G('ConeGeometry', 0.05, 0.16, 6), M(0xe8dcc2), 0, 1.3, 0.3, gt); beard.rotation.x = Math.PI;
-    [-0.18, 0.18].forEach(o => cyl(0.07, 0.07, 0.4, M(0x3a2a22), o, 0.2, 0, gt, 8));
-    const arm = cyl(0.06, 0.06, 0.45, red, 0.34, 0.95, 0.12, gt, 8); arm.rotation.z = -0.5; arm.rotation.x = -0.4;
-    const scrollTex = canvasTex(128, 256, (c, w, h) => { c.fillStyle = '#d11f2a'; c.fillRect(0, 0, w, h); c.strokeStyle = '#e3b04b'; c.lineWidth = 6; c.strokeRect(6, 6, w - 12, h - 12); c.fillStyle = '#f3dca3'; c.textAlign = 'center'; c.font = `bold 34px ${FD}`; ['Chúc', 'mừng', 'năm', 'mới'].forEach((t, i) => c.fillText(t, w / 2, 70 + i * 48)); });
-    flatPlane(scrollTex, 0.3, 0.6, 0.55, 1.05, 0.38, gt, 0, true);
-    gt.rotation.y = -0.3;
 
     // hàng rào tre hai bên, treo nón lá và câu đối chữ thoi
     [-1, 1].forEach(sd => {
@@ -1107,6 +1131,8 @@ export function buildWorld(cfg, env) {
   })();
 
   return {
+    brochureSpot: { x: -0.78, y: 1.08, z: 7.54 },
+    lixiTrees: [{ x: -2.2, z: 7.6 }, { x: 2.2, z: 7.6 }],
     root, obstacles, beamMats, lanternMat, fairyMat, bldMat, backdropMat, steamPuffs, useLed, lamps, twinkle, foodTables
   };
 }

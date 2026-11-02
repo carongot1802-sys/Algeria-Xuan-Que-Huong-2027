@@ -68,7 +68,8 @@ export const CONFIG = {
       title: [],
       body: []
     },
-    elements: []
+    elements: [],
+    products: { backdrop: [] }
   },
 
   scene: {
@@ -86,6 +87,43 @@ export const CONFIG = {
       left: 'Xuân Sang Cội Phúc Sinh Nhành Lộc',
       right: 'Tết Về Cây Đức Trổ Thêm Hoa'
     },
+    booths: {
+      coffee: { vi: 'Gian cà phê', fr: 'Stand de café' },
+      tea: { vi: 'Gian trà', fr: 'Stand de thé' }
+    },
+    lixiTitle: 'Hái lộc đầu xuân',
+    lixiMessages: [
+      "Năm mới an khang, vạn sự như ý.",
+      "Chúc bạn một năm nhiều niềm vui và thật nhiều sức khỏe.",
+      "Tiền vô như nước, tài lộc đầy nhà.",
+      "Bonne année ! Que 2027 vous apporte joie et santé.\nNăm mới vui khỏe, nhiều niềm vui.",
+      "Cung chúc tân xuân, vạn sự cát tường.",
+      "Tết là đoàn viên: hôm nay có người mình thương ở bên, đó là lộc lớn nhất.",
+      "Một năm mới bình an, công việc hanh thông.",
+      "Mùi mềm mại, năm mới êm đềm, mọi việc suôn sẻ.",
+      "Chúc bạn gặp nhiều may mắn và những người bạn tốt.",
+      "Que cette nouvelle année vous apporte prospérité et bonheur.\nChúc năm mới thịnh vượng, hạnh phúc.",
+      "Sức khỏe dồi dào, tâm an, ý vui.",
+      "Xuân sang hoa nở, lộc đến bên thềm.",
+      "Học hành tấn tới, sự nghiệp thăng hoa.",
+      "Đi đâu cũng gặp quý nhân, làm gì cũng gặp thuận lợi.",
+      "Mong gia đình bạn sum vầy, ấm áp trong ngày Tết.",
+      "Meilleurs vœux de santé et de réussite !\nChúc sức khỏe và thành công.",
+      "Mỗi nụ cười hôm nay là một tấm lộc đầu năm.",
+      "Chúc bạn nhiều bình yên giữa những ngày bận rộn.",
+      "Cà phê thơm, trà ngát, năm mới ngọt ngào.",
+      "Xuân về mang theo hy vọng mới, chúc bạn mọi điều như ý.",
+      "Năm mới, bạn bè gần xa luôn nhớ về nhau.",
+      "Chúc tình hữu nghị Việt Nam và Algeria mãi xanh tươi như mùa xuân.\nQue l'amitié Vietnam-Algérie reste éternellement printanière.",
+      "Lộc xuân đầu năm, may mắn cả năm.",
+      "Một chén trà đầu năm, một năm trọn niềm vui.",
+      "Chúc bạn bước sang năm mới với trái tim nhẹ nhàng.",
+      "Bánh chưng xanh, câu đối đỏ, Tết này thêm ý nghĩa.",
+      "Gặp nhau là duyên, cùng đón Tết là lộc.",
+      "Ước gì trong năm mới, điều bạn mong sẽ thành.",
+      "Joyeux Têt ! Que l'année du Chèvre vous soit douce.\nVui Tết Đinh Mùi, năm Mùi thật êm ái.",
+      "Chúc bạn một năm mới rộn ràng tiếng cười."
+],
     foods: [
       { kind: 'pho', name: 'Phở bò', image: 'assets/food/pho.jpg', note: 'Xin mời!' },
       { kind: 'banhmi', name: 'Bánh mì', image: 'assets/food/banh-mi.jpg', note: 'Xin mời!' },
@@ -94,6 +132,15 @@ export const CONFIG = {
       { kind: 'banhchung', name: 'Bánh chưng', image: '', note: 'Xin mời!' },
       { kind: 'drink', name: 'Nước uống', image: '', note: 'Xin mời!' }
     ]
+  },
+
+  brochure: {
+    title: 'Brochure chương trình',
+    front: 'assets/brochure/sample-mat-truoc.jpg',
+    back: 'assets/brochure/sample-mat-sau.jpg',
+    frontLabel: 'Mặt tiếng Việt',
+    backLabel: 'Mặt tiếng Pháp (Verso)',
+    note: 'Brochure được phát tại bàn đón tiếp. Khách có thể cầm theo để xem lại chương trình.'
   },
 
   thanks: {

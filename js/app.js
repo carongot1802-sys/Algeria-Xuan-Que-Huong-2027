@@ -197,6 +197,16 @@ function initMoodboard() {
   fillGallery($('#fontTitle'), m.fonts.title, 'Font chữ tiêu đề', 'Tải ảnh thiết kế font trong trang quản trị, ghi tên font ở chú thích', 2);
   fillGallery($('#fontBody'), m.fonts.body, 'Font chữ nội dung', 'Tải ảnh thiết kế font trong trang quản trị, ghi tên font ở chú thích', 2);
   fillGallery($('#elementGrid'), m.elements, 'Element', 'Lồng đèn, hoa đào, hoa mai, họa tiết', 6);
+
+  /* Sản phẩm truyền thông: phông nền và hai mặt brochure, mỗi mặt là một ảnh riêng */
+  const pr = m.products || {};
+  fillGallery($('#prodBackdrop'), (pr.backdrop || []).filter(x => x.src), 'Thiết kế phông nền sân khấu', 'Tải ảnh thiết kế phông trong trang quản trị, mục Moodboard', 1);
+  const b = C.brochure || {};
+  const sides = [{ src: b.front, caption: b.frontLabel || 'Mặt trước' }, { src: b.back, caption: b.backLabel || 'Mặt sau' }].filter(x => x.src);
+  $('#prodBroTitle').textContent = b.title || 'Brochure';
+  const bh = $('#prodBrochure');
+  if (sides.length) sides.forEach(it => bh.appendChild(imageFigure(it, sides)));
+  else { bh.appendChild(placeholder('Brochure mặt tiếng Việt', 'Tải ảnh trong trang quản trị')); bh.appendChild(placeholder('Brochure mặt tiếng Pháp', 'Tải ảnh trong trang quản trị')); }
 }
 $('#lightboxClose').onclick = () => $('#lightbox').close();
 $('#lbPrev').onclick = () => moveViewer(-1);
@@ -207,13 +217,73 @@ $('#lightbox').addEventListener('keydown', e => { if (e.key === 'ArrowLeft') mov
   lb.addEventListener('touchend', e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 50 && viewer.items.length > 1) moveViewer(dx < 0 ? 1 : -1); }); })();
 $('#lightbox').addEventListener('click', e => { if (e.target.id === 'lightbox') e.currentTarget.close(); });
 
+/* ================= Hái lộc đầu xuân ================= */
+const locBag = { order: [], last: -1 };
+function nextLoc() {
+  const list = (C.scene.lixiMessages || []).filter(x => String(x).trim());
+  if (!list.length) return 'Chúc bạn một năm mới an khang.';
+  if (locBag.order.length === 0 || locBag.n !== list.length) {
+    // xáo trộn Fisher-Yates, đảm bảo thông điệp đầu của lượt mới không trùng thông điệp cuối của lượt trước
+    const a = list.map((_, i) => i);
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    if (a.length > 1 && a[a.length - 1] === locBag.last) [a[0], a[a.length - 1]] = [a[a.length - 1], a[0]];
+    locBag.order = a; locBag.n = list.length;
+  }
+  const i = locBag.order.pop(); locBag.last = i;
+  return list[i];
+}
+function openLoc() {
+  const d = $('#locDlg');
+  $('#locTitle').textContent = C.scene.lixiTitle || 'Hái lộc đầu xuân';
+  const msg = nextLoc();
+  $('#locMsg').innerHTML = esc(msg).split('\n').map(l => `<span>${l}</span>`).join('');
+  const env = $('#locEnv'); env.classList.remove('pop'); void env.offsetWidth; env.classList.add('pop');
+  if (!d.open) d.showModal();
+}
+$('#locAgain').onclick = openLoc;
+$('#locClose').onclick = () => $('#locDlg').close();
+$('#locDlg').addEventListener('click', e => { if (e.target.id === 'locDlg') e.currentTarget.close(); });
+
+/* ================= Brochure: lật hai mặt, cầm theo ================= */
+let held = false;
+try { held = sessionStorage.getItem('brochureHeld') === '1'; } catch (e) { /* bỏ qua */ }
+let broSide = 0;
+function broRender() {
+  const b = C.brochure || {};
+  $('#broFlip').classList.toggle('flipped', broSide === 1);
+  $('#broLabel').textContent = broSide ? (b.backLabel || 'Mặt sau') : (b.frontLabel || 'Mặt trước');
+  $('#broTake').textContent = held ? 'Bỏ brochure xuống' : 'Cầm theo brochure';
+  $('#broTake').classList.toggle('btn-gold', !held);
+  $('#broTake').classList.toggle('btn-line', held);
+  $('#heldChip').hidden = !held || !space;
+}
+function openBrochure(side = 0) {
+  const b = C.brochure || {};
+  $('#broImgF').src = b.front || ''; $('#broImgB').src = b.back || '';
+  $('#broNote').textContent = b.note || '';
+  $('#broTurn').hidden = !(b.front && b.back);
+  broSide = side; broRender();
+  const d = $('#broDlg'); if (!d.open) d.showModal();
+}
+$('#broTurn').onclick = () => { broSide = broSide ? 0 : 1; broRender(); };
+$('#broFlip').onclick = () => { if (C.brochure && C.brochure.front && C.brochure.back) { broSide = broSide ? 0 : 1; broRender(); } };
+$('#broTake').onclick = () => {
+  held = !held;
+  try { sessionStorage.setItem('brochureHeld', held ? '1' : '0'); } catch (e) { /* bỏ qua */ }
+  broRender();
+  if (held) $('#broDlg').close();
+};
+$('#broClose').onclick = () => $('#broDlg').close();
+$('#broDlg').addEventListener('click', e => { if (e.target.id === 'broDlg') e.currentTarget.close(); });
+$('#heldChip').onclick = () => openBrochure(0);
+
 /* ================= Không gian 3D ================= */
 const VIEW_BUTTONS = [['overview', 'Toàn cảnh'], ['gate', 'Từ cổng vào'], ['audience', 'Góc khán giả'], ['stage', 'Từ sân khấu'], ['top', 'Nhìn từ trên cao']];
 
 async function initSpace() {
   const loading = $('#spaceLoading');
   let mod;
-  try { mod = await import('./scene3d.js'); }
+  try { mod = await import('./scene3d.js?v=5'); }
   catch (err) {
     console.error(err);
     loading.textContent = 'Không tải được thư viện 3D. Hãy kiểm tra kết nối mạng rồi tải lại trang.';
@@ -262,7 +332,7 @@ async function initSpace() {
 
   function handleMode(m) {
     $$('#modeSeg button').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
-    $('#joy').hidden = !(m === 'walk' && coarse);
+    $('#joy').hidden = !(coarse || isMobile());
     $('#spaceHint').textContent = m === 'walk'
       ? 'Kéo để nhìn quanh, dùng W A S D hoặc phím mũi tên để đi, giữ Shift để đi nhanh, bấm vào sàn để đi tới đó.'
       : 'Kéo để xoay, cuộn để phóng to, giữ chuột phải hoặc dùng phím W A S D để di chuyển, nhấp đúp vào sàn để bay tới đó.';
@@ -271,6 +341,8 @@ async function initSpace() {
 
   function handleSelect(id) {
     activeId = id;
+    if (id && id.startsWith('loc:')) { panel.hidden = true; openLoc(); return; }
+    if (id === 'brochure') { panel.hidden = true; openBrochure(0); return; }
     const isFood = !!id && id.startsWith('food:');
     $$('#legendList button').forEach(b => b.classList.toggle('on', b.dataset.zone === (isFood ? 'buffet' : id)));
     if (!id) { panel.hidden = true; return; }
@@ -307,6 +379,7 @@ async function initSpace() {
     $('#legendToggle').setAttribute('aria-expanded', String(!legend.classList.contains('closed')));
   };
   if (isMobile()) legend.classList.add('closed');
+  $('#joy').hidden = !(coarse || isMobile());
 
   const vb = $('#viewButtons');
   VIEW_BUTTONS.forEach(([key, label], i) => {
@@ -359,6 +432,7 @@ async function initSpace() {
   $('#endBtn').addEventListener('click', () => { stopTour(); });
 
   space = { api, tourStop: stopTour };
+  $('#heldChip').hidden = !held;
   loading.classList.add('gone');
   if (current === '/khong-gian') api.start();
   setTimeout(() => $('#spaceHint').classList.add('gone'), 10000);

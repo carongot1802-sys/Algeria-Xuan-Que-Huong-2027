@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { buildWorld, GEO, STAGE_RECT, STAGE_H } from './world.js';
+import { buildWorld, GEO, STAGE_RECT, STAGE_H } from './world.js?v=5';
 
 const VIEWS = {
   overview: { p: [15, 12.5, 17],  t: [0, 0.4, -1.5] },
@@ -73,7 +73,7 @@ export function createScene(container, opts) {
   };
   const world = buildWorld(cfg, env);
   scene.add(world.root);
-  const { obstacles, steamPuffs, backdropMat, lanternMat, fairyMat, bldMat, beamMats, useLed, lamps, twinkle, foodTables } = world;
+  const { obstacles, steamPuffs, backdropMat, lanternMat, fairyMat, bldMat, beamMats, useLed, lamps, twinkle, foodTables, lixiTrees, brochureSpot } = world;
 
   /* ---------- Vùng sáng sàn, vùng bấm, số hiệu ---------- */
   const highlights = {};
@@ -105,7 +105,24 @@ export function createScene(container, opts) {
     const px = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.3, 1.2), new THREE.MeshBasicMaterial({ visible: false }));
     px.position.set(x, 0.65, z); px.userData.zone = id; scene.add(px); foodProxies.push(px);
   });
+  const smallProxies = [...foodProxies];
+  const extraGeo = {};
+  function addItem(id, label, pos, size, cam, hot) {
+    extraGeo[id] = { hot, cam };
+    const px = new THREE.Mesh(new THREE.BoxGeometry(...size), new THREE.MeshBasicMaterial({ visible: false }));
+    px.position.set(...pos); px.userData.zone = id; scene.add(px); foodProxies.push(px); smallProxies.push(px);
+    const b = document.createElement('button');
+    b.dataset.id = id; b.type = 'button'; b.className = 'hotspot mini'; b.setAttribute('aria-label', label);
+    b.innerHTML = `<b></b><span>${label}</span>`;
+    b.addEventListener('click', e => { e.stopPropagation(); selectZone(id); });
+    hotspotLayer.appendChild(b);
+    hotEls[id] = { el: b, v: new THREE.Vector3(...hot) };
+  }
   const hotEls = {};
+  lixiTrees.forEach((t, i) => addItem('loc:' + i, cfg.scene.lixiTitle || 'Hái lộc đầu xuân', [t.x, 2.2, t.z], [1.9, 2.4, 1.9],
+    { p: [t.x * 0.35, 2.0, 11.6], t: [t.x, 2.0, t.z] }, [t.x, 3.5, t.z]));
+  addItem('brochure', (cfg.brochure && cfg.brochure.title) || 'Brochure', [brochureSpot.x, brochureSpot.y + 0.05, brochureSpot.z], [0.55, 0.3, 0.45],
+    { p: [-0.1, 1.9, 9.8], t: [brochureSpot.x, 1.0, brochureSpot.z] }, [brochureSpot.x, 1.45, brochureSpot.z]);
   foodTables.forEach(({ i }) => {
     const id = 'food:' + i;
     const f = cfg.scene.foods[i] || {};
@@ -133,7 +150,8 @@ export function createScene(container, opts) {
   let tween = null;
   let yaw = 0, pitch = 0, groundY = 0;
   let walkTarget = null;
-  const move = { x: 0, y: 0 };
+  const move = { x: 0, y: 0, lx: 0 };
+  const vel = { x: 0, z: 0 };
   const keys = new Set();
   const up = new THREE.Vector3(0, 1, 0);
   const tmpF = new THREE.Vector3(), tmpR = new THREE.Vector3(), tmpV = new THREE.Vector3();
@@ -162,7 +180,7 @@ export function createScene(container, opts) {
     tmpF.copy(controls.target).sub(camera.position).normalize();
     yaw = Math.atan2(-tmpF.x, -tmpF.z);
     pitch = clamp(Math.asin(tmpF.y), -1.0, 1.0);
-    groundY = 0;
+    groundY = 0; vel.x = vel.z = 0;
     controls.enabled = false;
     mode = 'walk';
     if (onMode) onMode('walk');
@@ -177,7 +195,7 @@ export function createScene(container, opts) {
   function selectZone(id, { fly = true } = {}) {
     activeId = id;
     Object.entries(hotEls).forEach(([k, h]) => h.el.classList.toggle('on', k === id));
-    const gg = GEO[id] || foodGeo[id];
+    const gg = GEO[id] || foodGeo[id] || extraGeo[id];
     if (id && fly && gg) { exitWalk(); flyTo(gg.cam.p, gg.cam.t); }
     if (onSelect) onSelect(id);
   }
@@ -305,7 +323,9 @@ export function createScene(container, opts) {
     if (moved > 6 || !quick) return;
     setNdc(e); ray.setFromCamera(ndc, camera);
     if (mode === 'walk') {
-      if (ray.ray.intersectPlane(groundPlane, hitV)) walkTarget = { x: hitV.x, z: hitV.z };
+      const near = ray.intersectObjects(smallProxies, false)[0];
+      if (near && near.distance < 9) { walkTarget = null; activeId = near.object.userData.zone; Object.entries(hotEls).forEach(([k, h]) => h.el.classList.toggle('on', k === activeId)); if (onSelect) onSelect(activeId); return; }
+      if (ray.ray.intersectPlane(groundPlane, hitV)) walkTarget = { x: hitV.x, z: hitV.z, t: 0 };
     } else {
       const hit = ray.intersectObjects(foodProxies, false)[0] || ray.intersectObjects(proxies, false)[0];
       if (hit) selectZone(hit.object.userData.zone);
@@ -367,26 +387,37 @@ export function createScene(container, opts) {
     if (mode !== 'walk') return;
     const turn = (keys.has('arrowleft') ? 1 : 0) - (keys.has('arrowright') ? 1 : 0);
     yaw += turn * 1.7 * dt;
-    let mx = 0, mz = 0;
     const fwdX = -Math.sin(yaw), fwdZ = -Math.cos(yaw);
     const rgtX = Math.cos(yaw), rgtZ = -Math.sin(yaw);
+    let wx = 0, wz = 0;
+    const maxSp = fast ? 4.4 : 2.4;
     if (f || s) {
       const len = Math.hypot(f, s); const k = len > 1 ? 1 / len : 1;
-      const sp = (fast ? 4.6 : 2.2) * dt * k;
-      mx = (fwdX * f + rgtX * s) * sp; mz = (fwdZ * f + rgtZ * s) * sp;
+      wx = (fwdX * f + rgtX * s) * maxSp * k; wz = (fwdZ * f + rgtZ * s) * maxSp * k;
+      walkTarget = null;
     } else if (walkTarget) {
       const dx = walkTarget.x - camera.position.x, dz = walkTarget.z - camera.position.z, d = Math.hypot(dx, dz);
-      if (d < 0.2) walkTarget = null;
+      if (d < 0.25 || walkTarget.t > 0.5) walkTarget = null;
       else {
         const want = Math.atan2(-dx, -dz);
         let diff = want - yaw; diff = Math.atan2(Math.sin(diff), Math.cos(diff));
-        yaw += diff * Math.min(1, dt * 4);
-        const sp = Math.min(d, 3.2 * dt);
-        mx = (dx / d) * sp; mz = (dz / d) * sp;
+        yaw += diff * Math.min(1, dt * 5);
+        const sp = Math.min(maxSp * 1.2, d * 2.5 + 0.6);
+        wx = (dx / d) * sp; wz = (dz / d) * sp;
       }
     }
-    tmpV.set(camera.position.x + mx, 0, camera.position.z + mz);
-    resolve(tmpV);
+    // tăng giảm tốc mượt
+    const acc = Math.min(1, dt * (wx || wz ? 9 : 12));
+    vel.x += (wx - vel.x) * acc; vel.z += (wz - vel.z) * acc;
+    const px0 = camera.position.x, pz0 = camera.position.z;
+    // đi từng bước nhỏ, trượt dọc vật cản
+    const steps = Math.max(1, Math.ceil(Math.hypot(vel.x, vel.z) * dt / 0.12));
+    tmpV.set(px0, 0, pz0);
+    for (let i = 0; i < steps; i++) { tmpV.x += vel.x * dt / steps; tmpV.z += vel.z * dt / steps; resolve(tmpV); }
+    if (walkTarget) {
+      const want = Math.hypot(vel.x, vel.z) * dt, got = Math.hypot(tmpV.x - px0, tmpV.z - pz0);
+      if (want > 0.002 && got < want * 0.3) walkTarget.t += dt; else walkTarget.t = Math.max(0, walkTarget.t - dt);
+    }
     const onStage = tmpV.x > STAGE_RECT[0] && tmpV.x < STAGE_RECT[1] && tmpV.z > STAGE_RECT[2] && tmpV.z < STAGE_RECT[3];
     groundY += ((onStage ? STAGE_H : 0) - groundY) * Math.min(1, dt * 8);
     camera.position.set(tmpV.x, groundY + EYE, tmpV.z);
@@ -399,7 +430,9 @@ export function createScene(container, opts) {
     Object.values(hotEls).forEach(({ el: b, v }) => {
       tmp.copy(v).project(camera);
       const hidden = tmp.z > 1 || tmp.z < -1;
-      const lowCam = camera.position.y < 5.5 && b.dataset.id !== activeId;
+      const mini = b.classList.contains('mini');
+      const near = mini && Math.hypot(camera.position.x - v.x, camera.position.z - v.z) < 8;
+      const lowCam = camera.position.y < 5.5 && b.dataset.id !== activeId && !near;
       b.style.visibility = (hidden || lowCam) ? 'hidden' : 'visible';
       b.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * w}px, ${(-tmp.y * 0.5 + 0.5) * h}px) translate(-50%, -50%)`;
     });

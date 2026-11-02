@@ -98,7 +98,7 @@ const imageRow = (it, rerender) => h('div', {}, imgField('Ảnh', it, 'src', rer
 /* ---------- Các tab ---------- */
 const TABS = [
   ['general', 'Chung'], ['content', 'Nội dung trình bày'], ['docs', 'Tài liệu'], ['proposal', 'Proposal'],
-  ['mood', 'Moodboard'], ['theme', 'Chữ và màu'], ['scene', 'Không gian 3D'], ['zones', 'Các khu 3D'], ['thanks', 'Lời cảm ơn']
+  ['mood', 'Moodboard'], ['theme', 'Chữ và màu'], ['scene', 'Không gian 3D'], ['loc', 'Hái lộc'], ['media', 'Brochure và sản phẩm truyền thông'], ['zones', 'Các khu 3D'], ['thanks', 'Lời cảm ơn']
 ];
 const FONTS = ['Be Vietnam Pro', 'Cormorant Garamond', 'Playfair Display', 'Lora', 'Noto Serif', 'Merriweather', 'Montserrat', 'Roboto', 'Nunito', 'Quicksand', 'Dancing Script', 'Pacifico', 'Yeseva One'];
 
@@ -228,12 +228,45 @@ const VIEWS = {
       h('h3', {}, 'Bảng hiệu Đại sứ quán'),
       imgField('Quốc huy', sc, 'emblemImage', render),
       field('Tên tiếng Việt (in hoa)', e, 'nameVi'), field('Tên tiếng Pháp (in hoa)', e, 'nameFr', { area: true }), field('Địa chỉ', e, 'address'),
+      h('h3', {}, 'Biển hiệu gian hàng, tiếng Việt và tiếng Pháp'),
+      h('div', { class: 'grid2' }, field('Gian cà phê, tiếng Việt', sc.booths.coffee, 'vi'), field('Gian cà phê, tiếng Pháp', sc.booths.coffee, 'fr')),
+      h('div', { class: 'grid2' }, field('Gian trà, tiếng Việt', sc.booths.tea, 'vi'), field('Gian trà, tiếng Pháp', sc.booths.tea, 'fr')),
       h('h3', {}, 'Câu đối'),
       h('p', { class: 'hint' }, 'Mỗi vế viết cách nhau bằng dấu cách, mỗi từ nằm một dòng dọc.'),
       field('Vế trái', sc.couplets, 'left'), field('Vế phải', sc.couplets, 'right'),
       h('h3', {}, 'Các món ở khu buffet'),
       ...sc.foods.map((f, i) => h('div', { class: 'item' }, h('div', {}, field(`Bàn ${i + 1}, tên món`, f, 'name'), field('Câu chú thích khi bấm vào bàn', f, 'note'), imgField('Ảnh món (hiện trong khung khi bấm vào bàn)', f, 'image', render)), h('div'))),
       h('p', { class: 'hint' }, 'Chỉnh xong phần 3D, xuất bản rồi tải lại trang web để thấy thay đổi.')];
+  },
+  loc() {
+    const sc = S.scene, arr = sc.lixiMessages;
+    const bulk = h('textarea', { placeholder: 'Dán nhiều thông điệp, mỗi dòng một thông điệp. Muốn kèm bản tiếng Pháp thì viết tiếng Việt, gõ dấu gạch đứng | rồi tiếng Pháp.', rows: 5 });
+    return [h('h2', {}, 'Hái lộc đầu xuân'),
+      h('p', { class: 'hint' }, 'Khách bấm vào cây đào hoặc cây mai cạnh bàn đón tiếp để hái một phong bao. Mỗi lần hiện một thông điệp khác, các thông điệp được trộn ngẫu nhiên và dùng hết một vòng rồi mới lặp lại.'),
+      field('Dòng chữ treo trên cây', sc, 'lixiTitle'),
+      h('h3', {}, `Thông điệp (${arr.length})`),
+      list(arr, (it, i) => {
+        const t = h('textarea', { rows: 2 }); t.value = it;
+        t.addEventListener('input', () => { arr[i] = t.value; touch(); });
+        return h('div', {}, h('label', {}, `Thông điệp ${i + 1}`, t));
+      }, [h('button', { class: 'b b-red b-sm', type: 'button', onclick: () => { arr.push(''); touch(); render(); } }, 'Thêm thông điệp')], render),
+      h('h3', {}, 'Thêm nhiều thông điệp cùng lúc'), bulk,
+      h('div', { class: 'row2' }, h('button', { class: 'b b-line b-sm', type: 'button', onclick: () => {
+        const lines = bulk.value.split('\n').map(x => x.trim()).filter(Boolean);
+        lines.forEach(l => arr.push(l.split('|').map(x => x.trim()).join('\n')));
+        if (lines.length) { touch(); render(); toast(`Đã thêm ${lines.length} thông điệp`); }
+      } }, 'Thêm các dòng trên'))];
+  },
+  media() {
+    const b = S.brochure, pr = S.moodboard.products;
+    return [h('h2', {}, 'Brochure và sản phẩm truyền thông'),
+      h('p', { class: 'hint' }, 'Brochure có hai mặt. Ở không gian 3D khách bấm vào brochure trên bàn đón tiếp sẽ thấy cửa sổ lật được hai mặt. Ở Moodboard, hai mặt hiện riêng biệt. Ảnh nên cùng tỉ lệ (mẫu hiện tại là A4 ngang).'),
+      field('Tên brochure', b, 'title'),
+      h('h3', {}, 'Mặt tiếng Việt'), imgField('Ảnh mặt tiếng Việt', b, 'front', render), field('Chú thích mặt này', b, 'frontLabel'),
+      h('h3', {}, 'Mặt tiếng Pháp'), imgField('Ảnh mặt tiếng Pháp', b, 'back', render), field('Chú thích mặt này', b, 'backLabel'),
+      field('Dòng ghi chú dưới cửa sổ brochure', b, 'note', { area: true }),
+      h('h3', {}, 'Thiết kế phông nền sân khấu (hiện ở Moodboard)'),
+      list(pr.backdrop, it => imageRow(it, render), [addImagesBtn(pr.backdrop, 'Thêm thiết kế phông nền', render)], render)];
   },
   zones() {
     return [h('h2', {}, 'Các khu 3D'), h('p', { class: 'hint' }, 'Chữ trong bảng giải thích khi bấm vào từng khu.'),
