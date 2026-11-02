@@ -5,8 +5,8 @@
   "team": "Nhóm Thực tập sinh",
   "footer": "Kế hoạch truyền thông cho chương trình Xuân Quê hương 2027 tại Đại sứ quán Việt Nam tại Algeria được thực hiện bởi Nhóm Thực tập sinh.",
   "theme": {
-    "headingFont": "Assox",
-    "bodyFont": "Beautique Display Condensed",
+    "headingFont": "Amarego",
+    "bodyFont": "Rokkitt",
     "customFonts": [
       {
         "name": "Amarego",
@@ -182,25 +182,25 @@
       {
         "kind": "pho",
         "name": "Phở bò",
-        "image": "assets/food/pho.jpg",
+        "image": "",
         "note": "Xin mời!"
       },
       {
         "kind": "banhmi",
         "name": "Bánh mì",
-        "image": "assets/food/banh-mi.jpg",
+        "image": "",
         "note": "Xin mời!"
       },
       {
         "kind": "sup",
         "name": "Súp",
-        "image": "assets/food/sup.jpg",
+        "image": "",
         "note": "Xin mời!"
       },
       {
         "kind": "che",
         "name": "Chè",
-        "image": "assets/food/che.jpg",
+        "image": "",
         "note": "Xin mời!"
       },
       {
