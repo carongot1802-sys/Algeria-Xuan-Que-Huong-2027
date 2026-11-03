@@ -213,12 +213,12 @@ export function buildWorld(cfg, env) {
    [3, -20, 16, 11, 8], [-12, -21, 10, 15, 8], [14, -22, 12, 13, 8]].forEach(([x, z, w, h, d]) => box(w, h, d, bldMat, x, h / 2, z));
 
   /* ---------- Cây, hoa đào, hoa mai ---------- */
-  function realTree(x, z) {
-    const g = new THREE.Group(); g.position.set(x, 0, z); root.add(g);
+  function realTree(x, z, sc = 1) {
+    const g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(sc); root.add(g);
     cyl(0.22, 0.34, 3.4, M(COL.wood), 0, 1.7, 0, g, 8);
     [[0, 4.2, 0, 1.5], [-1.1, 3.8, 0.4, 1.1], [1.0, 3.9, -0.3, 1.2], [0.2, 5.0, 0.3, 1.0], [-0.4, 3.6, -1.0, 1.0]].forEach(([a, b, c, r], i) =>
       mesh(G('IcosahedronGeometry', r, 1), M(i % 2 ? 0x3f7a45 : 0x2f6b3f), a, b, c, g));
-    circ(x, z, 0.5);
+    circ(x, z, 0.5 * sc);
   }
   function blossomTree(x, z, color, parent = root, s = 1, solid = true, lixi = 0) {
     const g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(s); parent.add(g);
@@ -262,6 +262,29 @@ export function buildWorld(cfg, env) {
     if (solid) circ(x, z, 0.45 * s);
   }
   realTree(-9.6, -8.8);
+  // thêm cây xanh, bụi cây và hàng rào cây cho khuôn viên
+  function hedge(x0, z0, x1, z1, h = 0.8) {
+    const n = Math.max(2, Math.round(Math.hypot(x1 - x0, z1 - z0) / 0.55));
+    for (let i = 0; i <= n; i++) {
+      const t = i / n, x = x0 + (x1 - x0) * t, z = z0 + (z1 - z0) * t;
+      const r = 0.42 + rnd() * 0.12;
+      mesh(G('IcosahedronGeometry', r, 1), M(i % 3 ? 0x2f6b3f : 0x3f7a45), x, h * 0.5 + rnd() * 0.12, z, root).scale.set(1, h / (r * 1.7), 1);
+    }
+    rect(Math.min(x0, x1) - 0.35, Math.max(x0, x1) + 0.35, Math.min(z0, z1) - 0.35, Math.max(z0, z1) + 0.35);
+  }
+  [[-7.2, -9.1, 1.05], [-11.2, -5.6, 0.9], [6.8, -9.2, 1.1], [11.2, -9.3, 1.0], [-11.3, 10.4, 1.0], [-11.3, 11.9, 0.85],
+   [11.3, 9.4, 1.05], [11.3, 11.6, 0.9], [-8.4, 10.9, 0.95], [8.6, 10.9, 1.0], [-11.3, -3.4, 0.8]].forEach(([x, z, sc]) => realTree(x, z, sc));
+  hedge(-11.7, -9.6, -8.2, -9.6); hedge(4.6, -9.6, 7.4, -9.6); hedge(9.2, -9.6, 11.7, -9.6);
+  hedge(-11.75, 9.3, -11.75, 11.9, 0.7); hedge(11.75, 7.6, 11.75, 11.9, 0.7);
+  hedge(-11.5, 11.65, -6.6, 11.65, 0.7); hedge(6.6, 11.65, 11.5, 11.65, 0.7);
+  hedge(-11.75, -9.0, -11.75, -5.2, 0.75);
+  // chậu bụi hoa nhỏ rải dọc lối đi
+  [[-3.4, 10.6], [3.4, 10.6], [-3.3, 5.2], [3.3, 5.2]].forEach(([x, z], i) => {
+    cyl(0.3, 0.24, 0.4, M(COL.redDeep), x, 0.2, z, root, 12);
+    for (let k = 0; k < 4; k++) mesh(G('IcosahedronGeometry', 0.26, 1), M(k % 2 ? 0x3f7a45 : 0x2f6b3f), x + (k - 1.5) * 0.1, 0.55 + (k % 2) * 0.1, z + ((k * 7) % 3 - 1) * 0.08, root);
+    for (let k = 0; k < 3; k++) sph(0.06, M(i % 2 ? COL.pink : COL.mai), x + (k - 1) * 0.15, 0.78, z, root, 6, 5);
+    circ(x, z, 0.32);
+  });
 
   /* ---------- Câu đối ---------- */
   function coupletTex(text) {
@@ -741,7 +764,6 @@ export function buildWorld(cfg, env) {
     for (let i = 0; i < 3; i++) cyl(0.12, 0.12, 0.3, M(COL.wood), px - 1.0 + (i % 2) * 0.3, 0.15, pz + 0.9 + i * 0.1, g, 8); // củi
     circ(11.4, 4.7, 0.8);
     blossomTree(-3.2, -2.3, COL.mai, g, 1.15, false);
-    signPlane('Gói bánh chưng', 2.6, 0.55, '#2f6b3f', '#f3dca3', -0.4, 2.7, -2.5, g, 0, true);
     cyl(0.04, 0.04, 2.5, M(COL.wood), -1.7, 1.25, -2.5, g, 6); cyl(0.04, 0.04, 2.5, M(COL.wood), 0.9, 1.25, -2.5, g, 6);
   })();
 

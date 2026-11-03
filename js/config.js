@@ -12,7 +12,7 @@ export const CONFIG = {
   footer: 'Kế hoạch truyền thông cho chương trình Xuân Quê hương 2027 tại Đại sứ quán Việt Nam tại Algeria được thực hiện bởi Nhóm Thực tập sinh.',
 
   theme: {
-    headingFont: 'Cormorant Garamond',
+    headingFont: 'Fraunces',
     bodyFont: 'Be Vietnam Pro',
     customFonts: [
       { name: 'Amarego', file: '' },
@@ -22,8 +22,8 @@ export const CONFIG = {
     ],
     colors: {
       brand: '#f3dca3', heroTitle: '#e3b04b', heroText: '#f3dca3',
-      pageTitle: '#7a0f18', sectionTitle: '#7a0f18', body: '#6f5c5f',
-      thanksTitle: '#e3b04b', thanksText: '#f3dca3', footer: '#6f5c5f',
+      pageTitle: '#72101a', sectionTitle: '#72101a', body: '#655658',
+      thanksTitle: '#e3b04b', thanksText: '#f3dca3', footer: '#655658',
       bannerTitle: '#f3dca3', bannerSub: '#e3b04b', couplet: '#f3dca3', sign: '#f3dca3'
     }
   },
@@ -92,6 +92,9 @@ export const CONFIG = {
       tea: { vi: 'Gian trà', fr: 'Stand de thé' }
     },
     lixiTitle: 'Hái lộc đầu xuân',
+    lixiCards: [],
+    lixiTextPos: 'middle',
+    lixiTextColor: '#fbe9b8',
     lixiMessages: [
       "Năm mới an khang, vạn sự như ý.",
       "Chúc bạn một năm nhiều niềm vui và thật nhiều sức khỏe.",
@@ -125,12 +128,12 @@ export const CONFIG = {
       "Chúc bạn một năm mới rộn ràng tiếng cười."
 ],
     foods: [
-      { kind: 'pho', name: 'Phở bò', image: 'assets/food/pho.jpg', note: 'Xin mời!' },
-      { kind: 'banhmi', name: 'Bánh mì', image: 'assets/food/banh-mi.jpg', note: 'Xin mời!' },
-      { kind: 'sup', name: 'Súp', image: 'assets/food/sup.jpg', note: 'Xin mời!' },
-      { kind: 'che', name: 'Chè', image: 'assets/food/che.jpg', note: 'Xin mời!' },
-      { kind: 'banhchung', name: 'Bánh chưng', image: '', note: 'Xin mời!' },
-      { kind: 'drink', name: 'Nước uống', image: '', note: 'Xin mời!' }
+      { kind: 'pho', name: 'Phở bò', note: 'Xin mời!' },
+      { kind: 'banhmi', name: 'Bánh mì', note: 'Xin mời!' },
+      { kind: 'sup', name: 'Súp', note: 'Xin mời!' },
+      { kind: 'che', name: 'Chè', note: 'Xin mời!' },
+      { kind: 'banhchung', name: 'Bánh chưng', note: 'Xin mời!' },
+      { kind: 'drink', name: 'Nước uống', note: 'Xin mời!' }
     ]
   },
 
@@ -149,66 +152,68 @@ export const CONFIG = {
     sign: 'Nhóm Thực tập sinh, Đại sứ quán Việt Nam tại Algeria'
   },
 
+  zonesRev: 3,
+  themeRev: 1,
   zones: [
     {
       id: 'gate', no: 1, name: 'Cổng chào',
-      desc: 'Cổng vòm đỏ đứng ngay trước tường rào, chữ Xuân Quê hương Đinh Mùi 2027 uốn theo vòm, trang trí hoa giấy, quạt, đồng tiền vàng và lồng đèn. Hai bên là hàng rào tre treo nón lá và câu đối chữ thoi. Bên phải ngoài tường có bảng hiệu Đại sứ quán kèm quốc huy và địa chỉ.',
-      plan: 'Điểm chụp ảnh đầu tiên của khách. Thảm đỏ trải từ mép đường, qua cổng, tới bàn đón tiếp.'
+      desc: 'Cổng vòm đỏ trước tường rào, chữ Xuân Quê hương Đinh Mùi 2027 uốn theo vòm, hai bên là hàng rào tre treo nón lá và câu đối.',
+      plan: 'Điểm chụp ảnh đầu tiên của khách, thảm đỏ trải từ mép đường tới bàn đón tiếp.'
     },
     {
       id: 'reception', no: 2, name: 'Bàn đón tiếp',
-      desc: 'Điểm đến đầu tiên sau cổng chào. Quầy phủ đỏ có sổ lưu bút, thiệp và chậu hoa mai, hoa đào hai bên, phía trước ghi Bàn đón tiếp và Bienvenue, hai bên có cây đào, cây mai treo câu đối và đèn nháy.',
-      plan: 'Nhân sự đón khách, phát sơ đồ chương trình và hướng dẫn khách tới từng khu. Đây cũng là nơi cho khách quét mã QR xem ảnh sau sự kiện.'
+      desc: 'Quầy phủ đỏ có sổ lưu bút, chồng brochure và hai cây đào, mai treo lì xì, câu đối. Bấm vào cây để hái lộc, bấm vào brochure để xem.',
+      plan: 'Nhân sự đón khách, phát brochure và hướng dẫn khách tới từng khu.'
     },
     {
       id: 'coffee', no: 3, name: 'Gian thưởng thức cà phê',
-      desc: 'Gian hàng lớn với mái che sọc đỏ trắng, banner cà phê phía sau, kệ gỗ bày gói cà phê, quầy có phin và nhiều cốc cà phê. Hai bên treo câu đối và lồng đèn, cạnh gian đặt chậu hoa đào.',
-      plan: 'Hình ảnh truyền thông nhấn vào khoảnh khắc cà phê phin nhỏ giọt và khách quốc tế nếm thử, phù hợp quay video ngắn.'
+      desc: 'Gian mái sọc đỏ trắng, kệ gỗ bày gói cà phê, quầy phin và nhiều cốc để khách nếm thử.',
+      plan: 'Hình ảnh nhấn vào cà phê phin nhỏ giọt, hợp quay video ngắn.'
     },
     {
       id: 'tea', no: 4, name: 'Gian thưởng thức trà',
-      desc: 'Gian trà cùng phong cách với gian cà phê nhưng banner màu xanh lá. Kệ bày hộp và lon trà, quầy có bộ ấm chén và nhiều chén trà để khách nếm thử.',
-      plan: 'Biển nhỏ song ngữ giới thiệu văn hóa uống trà ngày Tết đặt cạnh quầy.'
+      desc: 'Cùng phong cách gian cà phê, banner xanh lá, kệ hộp trà và bộ ấm chén để khách nếm thử.',
+      plan: 'Biển nhỏ song ngữ giới thiệu văn hóa uống trà ngày Tết.'
     },
     {
       id: 'banhchung', no: 5, name: 'Khu trải nghiệm gói bánh chưng',
-      desc: 'Bàn gói có lá dong, nếp, nhân và khuôn, phía trước là ba tấm chiếu cói để khách ngồi gói cùng người hướng dẫn. Nồi bánh đặt ở góc ngoài, dễ nhìn từ lối đi, có hơi nước bốc lên.',
-      plan: 'Khu nhiều ảnh và video tương tác nhất, nên bố trí một người chụp quay riêng và người hướng dẫn nói được tiếng Pháp.'
+      desc: 'Bàn gói có lá dong, nếp, nhân và khuôn, phía trước là ba tấm chiếu cói. Nồi bánh đặt ở góc ngoài, có hơi nước bốc lên.',
+      plan: 'Khu nhiều ảnh và video nhất, cần một người chụp quay riêng.'
     },
     {
       id: 'cocktail', no: 6, name: 'Bàn tiệc đứng',
-      desc: 'Các bàn cao phủ khăn đỏ đặt rải ở giữa sân để khách vừa đứng dùng món vừa trò chuyện, trên bàn có bát giấy kraft và ly kẻ caro đỏ như năm 2026.',
-      plan: 'Khu giao lưu chính giữa cộng đồng và đại diện chính quyền sở tại, dễ ghi lại khoảnh khắc tự nhiên.'
+      desc: 'Các bàn cao phủ khăn đỏ ở giữa sân để khách vừa đứng dùng món vừa trò chuyện.',
+      plan: 'Khu giao lưu chính, dễ ghi lại khoảnh khắc tự nhiên.'
     },
     {
       id: 'buffet', no: 7, name: 'Khu buffet món Việt',
-      desc: 'Mái che lớn với sáu bàn, mỗi bàn một món gồm phở, bánh mì, súp, chè, bánh chưng và quầy nước, đủ phục vụ trên 150 khách chia thành các hàng đợi. Bấm vào từng bàn để xem tên món.',
-      plan: 'Bốn góc mái có đèn công suất lớn, hai cột trước treo câu đối. Lối đi giữa các hàng một chiều để khách không dồn lại một điểm.'
+      desc: 'Mái che lớn với sáu bàn: phở, bánh mì, súp, chè, bánh chưng và quầy nước. Bấm vào từng bàn để xem tên món.',
+      plan: 'Bốn góc mái có đèn lớn, lối đi giữa các hàng đi một chiều.'
     },
     {
       id: 'seating', no: 8, name: 'Khu mời ngồi',
-      desc: 'Các bàn tròn cho khách lớn tuổi, gia đình có trẻ nhỏ và khách cần nghỉ chân, đặt bên trái gần sân khấu, dưới tán cây.',
-      plan: 'Có thể đặt biển giữ chỗ nhỏ trên bàn cho khách mời chính.'
+      desc: 'Các bàn tròn cho khách lớn tuổi, gia đình có trẻ nhỏ, đặt bên trái gần sân khấu dưới tán cây.',
+      plan: 'Có thể đặt biển giữ chỗ cho khách mời chính.'
     },
     {
       id: 'standing', no: 9, name: 'Khu khách đứng',
-      desc: 'Khoảng sân rộng trước sân khấu, nơi phần lớn trong khoảng 150 khách đứng theo dõi chương trình phát biểu và giao lưu.',
-      plan: 'Chừa lối đi hai bên để nhân sự phục vụ và máy quay di chuyển mà không chắn tầm nhìn.'
+      desc: 'Khoảng sân rộng trước sân khấu, nơi phần lớn trong 150 khách đứng theo dõi chương trình.',
+      plan: 'Chừa lối đi hai bên cho nhân sự và máy quay.'
     },
     {
       id: 'stage', no: 10, name: 'Sân khấu',
-      desc: 'Bục thấp trải thảm đỏ sát tường trắng, đủ rộng cho phát biểu, trao quà và chụp ảnh tập thể cuối chương trình.',
-      plan: 'Hai chậu đào và mai đặt hai đầu bục, dây đèn nhỏ chạy dọc tường phía trên, hai bên phông treo câu đối.'
+      desc: 'Bục thấp trải thảm đỏ sát tường trắng, đủ cho phát biểu, trao quà và chụp ảnh tập thể.',
+      plan: 'Hai chậu đào, mai ở hai đầu bục, dây đèn chạy dọc tường phía trên.'
     },
     {
       id: 'backdrop', no: 11, name: 'Phông nền',
-      desc: 'Năm 2026 phông là tấm in có đèn rọi phía trên, chưa dùng màn LED. Phông 2027 cần có nét giao thoa với nước bạn Algeria. Thiết kế của team được thêm trong trang quản trị và hiện ngay trên sân khấu.',
-      plan: 'Phông cũng là nền chụp ảnh tập thể, nên chữ và họa tiết cần đọc rõ khi có đông người đứng phía trước.'
+      desc: 'Phông 2027 cần nét giao thoa với Algeria. Thiết kế của team được thêm trong trang quản trị và hiện ngay trên sân khấu.',
+      plan: 'Là nền chụp ảnh tập thể, chữ và họa tiết phải đọc rõ khi có đông người đứng trước.'
     },
     {
       id: 'podium', no: 12, name: 'Bục phát biểu',
-      desc: 'Đặt bên trái sân khấu, có micro và biểu tượng chương trình ở mặt trước. Người phát biểu đứng sau bục, gần phông để lên hình nhưng không che chữ chính.',
-      plan: 'Cần kiểm tra góc máy từ khu khách đứng để phông luôn nằm gọn sau người phát biểu.'
+      desc: 'Đặt bên trái sân khấu, có micro và biểu tượng chương trình, người phát biểu đứng gần phông.',
+      plan: 'Kiểm tra góc máy từ khu khách đứng để phông luôn nằm gọn sau người phát biểu.'
     }
   ]
 };

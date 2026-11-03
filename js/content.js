@@ -1,4 +1,4 @@
-import { CONFIG } from './config.js?v=5';
+import { CONFIG } from './config.js?v=7';
 
 /* Gộp nội dung đã chỉnh trong data/content.json lên bản mặc định.
    Đối tượng thì gộp từng mục, danh sách thì thay hẳn. */
@@ -15,6 +15,7 @@ export function mergeDeep(base, over) {
 /* Font có sẵn để chọn. custom = không có trên Google Fonts, phải tải file font lên trong trang quản trị */
 export const FONT_OPTIONS = {
   heading: [
+    { label: 'Fraunces', family: 'Fraunces', weight: 600, google: 'Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700' },
     { label: 'Cormorant Garamond', family: 'Cormorant Garamond', weight: 700, google: 'Cormorant+Garamond:wght@600;700' },
     { label: 'Amarego', family: 'Amarego', weight: 700, custom: true },
     { label: 'Assox', family: 'Assox', weight: 700, custom: true },
@@ -45,7 +46,15 @@ export async function loadConfig(bust = true) {
   const base = JSON.parse(JSON.stringify(CONFIG));
   try {
     const r = await fetch('data/content.json' + (bust ? '?t=' + Date.now() : ''), { cache: 'no-store' });
-    if (r.ok) return normalise(mergeDeep(base, await r.json()));
+    if (r.ok) {
+      const j = await r.json();
+      if ((j.zonesRev || 0) < CONFIG.zonesRev) delete j.zones;
+      if ((j.themeRev || 0) < CONFIG.themeRev && j.theme) {       // giao diện mới: bỏ font tiêu đề mặc định cũ và bộ màu chữ cũ
+        if (j.theme.headingFont === 'Cormorant Garamond') delete j.theme.headingFont;
+        delete j.theme.colors;
+      }   // mô tả các khu đã được rút gọn, dùng bản mới
+      return normalise(mergeDeep(base, j));
+    }
   } catch (e) { /* dùng bản mặc định */ }
   return normalise(base);
 }
@@ -70,7 +79,7 @@ export function applyTheme(c) {
     }
   });
   const hasFile = o => !o.custom || !!(t.customFonts.find(f => f.name === o.label) || {}).file;
-  const fd = `'${h.family}'${hasFile(h) ? '' : ", 'Cormorant Garamond'"}, Georgia, serif`;
+  const fd = `'${h.family}'${hasFile(h) ? '' : ", 'Fraunces'"}, Georgia, serif`;
   const fb = `'${b.family}'${hasFile(b) ? '' : ", 'Be Vietnam Pro'"}, system-ui, sans-serif`;
   const root = document.documentElement.style;
   root.setProperty('--font-display', fd);

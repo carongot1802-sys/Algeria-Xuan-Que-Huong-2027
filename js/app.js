@@ -1,4 +1,4 @@
-import { loadConfig, applyTheme } from './content.js';
+import { loadConfig, applyTheme } from './content.js?v=7';
 
 const C = await loadConfig();
 applyTheme(C);
@@ -180,7 +180,22 @@ function fillGallery(host, items, hintTitle, hintText, n = 4) {
   else for (let i = 0; i < n; i++) host.appendChild(placeholder(hintTitle, hintText));
 }
 
+function initToc() {
+  const btns = $$('#toc button');
+  const secs = btns.map(b => $('#' + b.dataset.target));
+  btns.forEach(b => b.onclick = () => { const t = $('#' + b.dataset.target); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  const mark = () => {
+    const y = window.innerHeight * 0.32;
+    let cur = 0;
+    secs.forEach((s, i) => { if (s && s.getBoundingClientRect().top < y) cur = i; });
+    btns.forEach((b, i) => b.classList.toggle('on', i === cur));
+  };
+  window.addEventListener('scroll', () => { if (current === '/moodboard') mark(); }, { passive: true });
+  mark();
+}
+
 function initMoodboard() {
+  initToc();
   const m = C.moodboard;
   fillGallery($('#moodGrid'), m.images, 'Ảnh moodboard', 'Thêm ảnh trong trang quản trị, mục Moodboard', 6);
 
@@ -232,12 +247,35 @@ function nextLoc() {
   const i = locBag.order.pop(); locBag.last = i;
   return list[i];
 }
+const cardBag = { order: [], last: -1 };
+function nextCard() {
+  const imgs = (C.scene.lixiCards || []).map(x => (typeof x === 'string' ? x : x && x.src)).filter(Boolean);
+  if (!imgs.length) return '';
+  if (!cardBag.order.length) {
+    const a = imgs.map((_, i) => i);
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    if (a.length > 1 && a[a.length - 1] === cardBag.last) [a[0], a[a.length - 1]] = [a[a.length - 1], a[0]];
+    cardBag.order = a;
+  }
+  const i = cardBag.order.pop(); cardBag.last = i; return imgs[i];
+}
 function openLoc() {
-  const d = $('#locDlg');
+  const d = $('#locDlg'), card = $('#locCard');
   $('#locTitle').textContent = C.scene.lixiTitle || 'Hái lộc đầu xuân';
   const msg = nextLoc();
   $('#locMsg').innerHTML = esc(msg).split('\n').map(l => `<span>${l}</span>`).join('');
-  const env = $('#locEnv'); env.classList.remove('pop'); void env.offsetWidth; env.classList.add('pop');
+  const img = nextCard();
+  card.classList.toggle('has-img', !!img);
+  $('#locImg').src = img || '';
+  card.dataset.pos = C.scene.lixiTextPos || 'middle';
+  card.style.setProperty('--loc-ink', C.scene.lixiTextColor || '#fbe9b8');
+  const sp = $('#locSparks');
+  if (!sp.childElementCount) for (let i = 0; i < 18; i++) {
+    const e = document.createElement('i');
+    e.style.cssText = `left:${6 + Math.random() * 88}%;top:${8 + Math.random() * 84}%;--d:${(Math.random() * 1.2).toFixed(2)}s;--s:${(0.5 + Math.random() * 0.9).toFixed(2)}`;
+    sp.appendChild(e);
+  }
+  card.classList.remove('reveal'); void card.offsetWidth; card.classList.add('reveal');
   if (!d.open) d.showModal();
 }
 $('#locAgain').onclick = openLoc;
@@ -283,7 +321,7 @@ const VIEW_BUTTONS = [['overview', 'Toàn cảnh'], ['gate', 'Từ cổng vào']
 async function initSpace() {
   const loading = $('#spaceLoading');
   let mod;
-  try { mod = await import('./scene3d.js?v=5'); }
+  try { mod = await import('./scene3d.js?v=7'); }
   catch (err) {
     console.error(err);
     loading.textContent = 'Không tải được thư viện 3D. Hãy kiểm tra kết nối mạng rồi tải lại trang.';
@@ -346,7 +384,6 @@ async function initSpace() {
     const isFood = !!id && id.startsWith('food:');
     $$('#legendList button').forEach(b => b.classList.toggle('on', b.dataset.zone === (isFood ? 'buffet' : id)));
     if (!id) { panel.hidden = true; return; }
-    const food = $('#panelFood');
     if (isFood) {
       const f = C.scene.foods[Number(id.slice(5))] || {};
       const bz = zones.find(z => z.id === 'buffet');
@@ -354,14 +391,12 @@ async function initSpace() {
       $('#panelName').textContent = f.name || 'Món ăn';
       $('#panelDesc').textContent = f.note || 'Xin mời!';
       $('#panelPlan').hidden = true;
-      if (f.image) { food.src = f.image; food.alt = f.name || ''; food.hidden = false; } else food.hidden = true;
     } else {
       const z = zones.find(x => x.id === id);
       $('#panelNo').textContent = `Khu ${z.no} trên ${zones.length}`;
       $('#panelName').textContent = z.name;
       $('#panelDesc').textContent = z.desc;
       $('#panelPlan').textContent = z.plan; $('#panelPlan').hidden = !z.plan;
-      food.hidden = true;
     }
     panel.hidden = false; panel.scrollTop = 0;
     $('#spaceHint').classList.add('gone');
@@ -422,7 +457,10 @@ async function initSpace() {
     const max = r.width / 2 - 8, len = Math.hypot(dx, dy);
     if (len > max) { dx = dx / len * max; dy = dy / len * max; }
     knob.style.transform = `translate(${dx}px, ${dy}px)`;
-    api.setMove(dx / max, -dy / max);
+    const mag = Math.min(1, len / max), dead = 0.14;
+    const k = mag < dead ? 0 : Math.pow((mag - dead) / (1 - dead), 1.25);   // vùng chết nhỏ và tăng tốc từ từ, tránh giật
+    const ang = Math.atan2(dx, -dy);
+    api.setMove(Math.sin(ang) * k, Math.cos(ang) * k);
   };
   joy.addEventListener('pointerdown', e => { e.stopPropagation(); jid = e.pointerId; joy.setPointerCapture(jid); jmove(e); });
   joy.addEventListener('pointermove', e => { if (e.pointerId === jid) jmove(e); });

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { buildWorld, GEO, STAGE_RECT, STAGE_H } from './world.js?v=5';
+import { buildWorld, GEO, STAGE_RECT, STAGE_H } from './world.js?v=7';
 
 const VIEWS = {
   overview: { p: [15, 12.5, 17],  t: [0, 0.4, -1.5] },
@@ -24,10 +24,12 @@ export function createScene(container, opts) {
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---------- Renderer, camera, controls ---------- */
-  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowPower ? 1.5 : 2));
+  const renderer = new THREE.WebGLRenderer({ antialias: !lowPower, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowPower ? 1.25 : 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.autoUpdate = false;   // sân tĩnh, chỉ dựng bóng một lần cho nhẹ máy
+  let shadowFrames = 8;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   container.appendChild(renderer.domElement);
 
@@ -148,7 +150,7 @@ export function createScene(container, opts) {
   let mode = 'orbit';
   let activeId = null;
   let tween = null;
-  let yaw = 0, pitch = 0, groundY = 0;
+  let yaw = 0, pitch = 0, groundY = 0, lookYaw = 0, lookPitch = 0;
   let walkTarget = null;
   const move = { x: 0, y: 0, lx: 0 };
   const vel = { x: 0, z: 0 };
@@ -180,7 +182,7 @@ export function createScene(container, opts) {
     tmpF.copy(controls.target).sub(camera.position).normalize();
     yaw = Math.atan2(-tmpF.x, -tmpF.z);
     pitch = clamp(Math.asin(tmpF.y), -1.0, 1.0);
-    groundY = 0; vel.x = vel.z = 0;
+    groundY = 0; vel.x = vel.z = 0; lookYaw = lookPitch = 0;
     controls.enabled = false;
     mode = 'walk';
     if (onMode) onMode('walk');
@@ -220,6 +222,7 @@ export function createScene(container, opts) {
     backdropMat.emissiveIntensity = useLed ? 0.9 : T.bd;
     twScale = T.tw;
     lamps.forEach(l => { l.light.intensity = m === 'dusk' ? l.dusk : l.day; });
+    shadowFrames = 6;
   }
   let twScale = 1;
 
@@ -303,29 +306,43 @@ export function createScene(container, opts) {
     const r = el.getBoundingClientRect();
     ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
   }
-  el.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY, lx: e.clientX, ly: e.clientY, t: performance.now() }; walkTarget = null; });
+  let lookId = null;
+  el.addEventListener('pointerdown', e => {
+    if (lookId !== null && e.pointerType === 'touch') return;      // ngón thứ hai bỏ qua, chỉ một ngón dùng để nhìn
+    lookId = e.pointerId;
+    down = { x: e.clientX, y: e.clientY, lx: e.clientX, ly: e.clientY, t: performance.now(), type: e.pointerType };
+    walkTarget = null;
+    try { el.setPointerCapture(e.pointerId); } catch (err) { /* bỏ qua */ }
+  });
   el.addEventListener('pointermove', e => {
-    if (down && mode === 'walk' && e.buttons) {
-      yaw -= (e.clientX - down.lx) * 0.005;
-      pitch = clamp(pitch - (e.clientY - down.ly) * 0.004, -1.1, 1.1);
+    if (down && mode === 'walk' && e.pointerId === lookId && (e.buttons || e.pointerType === 'touch')) {
+      const k = e.pointerType === 'touch' ? 0.0042 : 0.005;
+      lookYaw -= (e.clientX - down.lx) * k;
+      lookPitch = clamp(lookPitch - (e.clientY - down.ly) * k * 0.85, -1.1, 1.1);
       down.lx = e.clientX; down.ly = e.clientY;
       return;
     }
-    if (e.buttons || mode === 'walk') return;
+    if (e.buttons || mode === 'walk' || e.pointerType === 'touch') return;
     setNdc(e); ray.setFromCamera(ndc, camera);
     el.style.cursor = (ray.intersectObjects(foodProxies, false).length || ray.intersectObjects(proxies, false).length) ? 'pointer' : 'grab';
   });
+  const endLook = e => { if (e.pointerId === lookId) lookId = null; };
+  el.addEventListener('pointercancel', e => { endLook(e); down = null; });
   el.addEventListener('pointerup', e => {
-    if (!down) return;
+    const mine = e.pointerId === lookId;
+    endLook(e);
+    if (!down || !mine) return;
     const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
     const quick = performance.now() - down.t < 450;
+    const touch = down.type === 'touch';
     down = null;
-    if (moved > 6 || !quick) return;
+    if (moved > 8 || !quick) return;
     setNdc(e); ray.setFromCamera(ndc, camera);
     if (mode === 'walk') {
       const near = ray.intersectObjects(smallProxies, false)[0];
       if (near && near.distance < 9) { walkTarget = null; activeId = near.object.userData.zone; Object.entries(hotEls).forEach(([k, h]) => h.el.classList.toggle('on', k === activeId)); if (onSelect) onSelect(activeId); return; }
-      if (ray.ray.intersectPlane(groundPlane, hitV)) walkTarget = { x: hitV.x, z: hitV.z, t: 0 };
+      // trên điện thoại chỉ dùng nút bi để đi, chạm vào sàn không làm nhân vật bật đi bất ngờ
+      if (!touch && ray.ray.intersectPlane(groundPlane, hitV)) walkTarget = { x: hitV.x, z: hitV.z, t: 0 };
     } else {
       const hit = ray.intersectObjects(foodProxies, false)[0] || ray.intersectObjects(proxies, false)[0];
       if (hit) selectZone(hit.object.userData.zone);
@@ -387,6 +404,10 @@ export function createScene(container, opts) {
     if (mode !== 'walk') return;
     const turn = (keys.has('arrowleft') ? 1 : 0) - (keys.has('arrowright') ? 1 : 0);
     yaw += turn * 1.7 * dt;
+    // xoay nhìn mượt: dồn góc kéo của ngón tay rồi áp dần theo từng khung hình
+    const lk = 1 - Math.pow(0.0005, dt);
+    yaw += lookYaw * lk; pitch = clamp(pitch + lookPitch * lk, -1.1, 1.1);
+    lookYaw -= lookYaw * lk; lookPitch -= lookPitch * lk;
     const fwdX = -Math.sin(yaw), fwdZ = -Math.cos(yaw);
     const rgtX = Math.cos(yaw), rgtZ = -Math.sin(yaw);
     let wx = 0, wz = 0;
@@ -490,10 +511,11 @@ export function createScene(container, opts) {
     }
     updateConfetti(dt);
     updateHotspots();
+    if (shadowFrames > 0) { renderer.shadowMap.needsUpdate = true; shadowFrames--; }
     renderer.render(scene, camera);
   }
 
-  function start() { if (running) return; running = true; last = performance.now(); resize(); raf = requestAnimationFrame(frame); }
+  function start() { if (running) return; running = true; shadowFrames = 8; last = performance.now(); resize(); raf = requestAnimationFrame(frame); }
   function stop() { running = false; cancelAnimationFrame(raf); keys.clear(); move.x = move.y = 0; }
 
   setTime('dusk');

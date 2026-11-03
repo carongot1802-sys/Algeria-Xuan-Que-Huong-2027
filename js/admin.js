@@ -1,4 +1,4 @@
-import { loadConfig, FONT_OPTIONS } from './content.js';
+import { loadConfig, FONT_OPTIONS } from './content.js?v=6';
 
 const $ = (s, r = document) => r.querySelector(s);
 let S = null;                       // bản nội dung đang chỉnh
@@ -235,7 +235,7 @@ const VIEWS = {
       h('p', { class: 'hint' }, 'Mỗi vế viết cách nhau bằng dấu cách, mỗi từ nằm một dòng dọc.'),
       field('Vế trái', sc.couplets, 'left'), field('Vế phải', sc.couplets, 'right'),
       h('h3', {}, 'Các món ở khu buffet'),
-      ...sc.foods.map((f, i) => h('div', { class: 'item' }, h('div', {}, field(`Bàn ${i + 1}, tên món`, f, 'name'), field('Câu chú thích khi bấm vào bàn', f, 'note'), imgField('Ảnh món (hiện trong khung khi bấm vào bàn)', f, 'image', render)), h('div'))),
+      ...sc.foods.map((f, i) => h('div', { class: 'item' }, h('div', {}, field(`Bàn ${i + 1}, tên món`, f, 'name'), field('Câu chú thích khi bấm vào bàn', f, 'note')), h('div'))),
       h('p', { class: 'hint' }, 'Chỉnh xong phần 3D, xuất bản rồi tải lại trang web để thấy thay đổi.')];
   },
   loc() {
@@ -244,6 +244,13 @@ const VIEWS = {
     return [h('h2', {}, 'Hái lộc đầu xuân'),
       h('p', { class: 'hint' }, 'Khách bấm vào cây đào hoặc cây mai cạnh bàn đón tiếp để hái một phong bao. Mỗi lần hiện một thông điệp khác, các thông điệp được trộn ngẫu nhiên và dùng hết một vòng rồi mới lặp lại.'),
       field('Dòng chữ treo trên cây', sc, 'lixiTitle'),
+      h('h3', {}, 'Ảnh thẻ lì xì'),
+      h('p', { class: 'hint' }, 'Thêm một hoặc nhiều ảnh thẻ lì xì. Mỗi lần hái lộc, một ảnh được chọn ngẫu nhiên và thông điệp hiện trên ảnh đó, kèm hiệu ứng ánh vàng. Nếu chưa có ảnh, trang dùng thẻ đỏ mặc định. Ảnh nên có phần trống để chữ nằm đọc rõ.'),
+      list(sc.lixiCards, (it, i) => { const o = { src: it }; return h('div', {}, imgField('Ảnh thẻ', { get src() { return sc.lixiCards[i]; }, set src(v) { sc.lixiCards[i] = v; } }, 'src', render)); },
+        [addImagesBtn(sc.lixiCards, 'Thêm ảnh thẻ lì xì', render, p => p)], render),
+      h('div', { class: 'grid2' },
+        h('label', {}, 'Vị trí thông điệp trên thẻ', (() => { const x = h('select', {}, h('option', { value: 'top' }, 'Phía trên'), h('option', { value: 'middle' }, 'Ở giữa'), h('option', { value: 'bottom' }, 'Phía dưới')); x.value = sc.lixiTextPos || 'middle'; x.onchange = () => { sc.lixiTextPos = x.value; touch(); }; return x; })()),
+        h('label', {}, 'Màu chữ thông điệp', (() => { const x = h('input', { type: 'color' }); x.value = /^#[0-9a-f]{6}$/i.test(sc.lixiTextColor || '') ? sc.lixiTextColor : '#fbe9b8'; x.oninput = () => { sc.lixiTextColor = x.value; touch(); }; return x; })())),
       h('h3', {}, `Thông điệp (${arr.length})`),
       list(arr, (it, i) => {
         const t = h('textarea', { rows: 2 }); t.value = it;
