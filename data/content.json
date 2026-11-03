@@ -114,7 +114,12 @@
     },
     "elements": [],
     "products": {
-      "backdrop": []
+      "backdrop": [
+        {
+          "src": "assets/uploads/mw13yyuz-phong-nen-san-khau-xuan-que-huong-dinh-m.jpg",
+          "caption": "Phông nền sân khấu "
+        }
+      ]
     }
   },
   "scene": {
@@ -216,10 +221,10 @@
   },
   "brochure": {
     "title": "Brochure chương trình",
-    "front": "assets/brochure/sample-mat-truoc.jpg",
-    "back": "assets/brochure/sample-mat-sau.jpg",
-    "frontLabel": "Mặt tiếng Việt",
-    "backLabel": "Mặt tiếng Pháp (Verso)",
+    "front": "assets/uploads/mw13yf47-1.jpg",
+    "back": "assets/uploads/mw13yj6o-2.jpg",
+    "frontLabel": "",
+    "backLabel": "",
     "note": "Brochure được phát tại bàn đón tiếp. Khách có thể cầm theo để xem lại chương trình."
   },
   "thanks": {
