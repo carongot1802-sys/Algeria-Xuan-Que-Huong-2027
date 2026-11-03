@@ -7,8 +7,8 @@
   <meta name="description" content="Kế hoạch truyền thông chương trình Xuân Quê hương Đinh Mùi 2027 tại Algeria, trình bày bằng web.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=7">
   <script type="importmap">
   {
     "imports": {
@@ -88,27 +88,38 @@
     <div class="page page-wide">
       <h2 id="mTitle"></h2>
       <p class="lead" id="mLead"></p>
-      <h3 class="sec">Moodboard</h3>
-      <div class="masonry" id="moodGrid"></div>
-      <h3 class="sec">Visual cue</h3>
-      <div class="vcue">
-        <figure class="vcue-key" id="keyVisual"></figure>
-        <div class="vcue-side">
-          <div class="palette" id="palette"></div>
+      <div class="mood-layout">
+        <nav class="toc" id="toc" aria-label="Mục lục trang Moodboard">
+          <button type="button" data-target="sec-mood" class="on">Moodboard</button>
+          <button type="button" data-target="sec-vcue">Visual cue</button>
+          <button type="button" data-target="sec-font">Font</button>
+          <button type="button" data-target="sec-elements">Elements</button>
+          <button type="button" data-target="sec-products">Sản phẩm truyền thông</button>
+        </nav>
+        <div class="mood-body">
+          <h3 class="sec" id="sec-mood">Moodboard</h3>
+          <div class="masonry" id="moodGrid"></div>
+          <h3 class="sec" id="sec-vcue">Visual cue</h3>
+          <div class="vcue">
+            <figure class="vcue-key" id="keyVisual"></figure>
+            <div class="vcue-side">
+              <div class="palette" id="palette"></div>
+            </div>
+          </div>
+          <h3 class="sec" id="sec-font">Font</h3>
+          <h4 class="sub">Chữ tiêu đề</h4>
+          <div class="fontgrid" id="fontTitle"></div>
+          <h4 class="sub">Chữ nội dung</h4>
+          <div class="fontgrid" id="fontBody"></div>
+          <h3 class="sec" id="sec-elements">Elements</h3>
+          <div class="elements" id="elementGrid"></div>
+          <h3 class="sec" id="sec-products">Sản phẩm truyền thông</h3>
+          <h4 class="sub">Phông nền sân khấu</h4>
+          <div class="prodgrid" id="prodBackdrop"></div>
+          <h4 class="sub" id="prodBroTitle">Brochure</h4>
+          <div class="prodgrid two" id="prodBrochure"></div>
         </div>
       </div>
-      <h3 class="sec">Font</h3>
-      <h4 class="sub">Chữ tiêu đề</h4>
-      <div class="fontgrid" id="fontTitle"></div>
-      <h4 class="sub">Chữ nội dung</h4>
-      <div class="fontgrid" id="fontBody"></div>
-      <h3 class="sec">Elements</h3>
-      <div class="elements" id="elementGrid"></div>
-      <h3 class="sec">Sản phẩm truyền thông</h3>
-      <h4 class="sub">Phông nền sân khấu</h4>
-      <div class="prodgrid" id="prodBackdrop"></div>
-      <h4 class="sub" id="prodBroTitle">Brochure</h4>
-      <div class="prodgrid two" id="prodBrochure"></div>
       <div class="pager">
         <a class="btn btn-line" href="#/proposal">Quay lại slide</a>
         <a class="btn btn-red" href="#/khong-gian">Tiếp tục tới không gian 3D</a>
@@ -147,7 +158,6 @@
         <h3 id="panelName"></h3>
         <p id="panelDesc"></p>
         <p class="panel-plan" id="panelPlan"></p>
-        <img class="panel-food" id="panelFood" alt="" hidden>
         <div class="panel-nav">
           <button type="button" class="btn btn-line" id="panelPrev">Khu trước</button>
           <button type="button" class="btn btn-line" id="panelNext">Khu sau</button>
@@ -193,11 +203,18 @@
 </dialog>
 
 <dialog class="locdlg" id="locDlg">
-  <div class="loc-card">
+  <div class="loc-card" id="locCard" data-pos="middle">
+    <div class="loc-glow" aria-hidden="true"></div>
+    <div class="loc-sparks" id="locSparks" aria-hidden="true"></div>
     <button type="button" class="loc-x" id="locClose" aria-label="Đóng">Đóng</button>
-    <div class="loc-env" id="locEnv"><i></i></div>
-    <p class="loc-title" id="locTitle"></p>
-    <p class="loc-msg" id="locMsg"></p>
+    <div class="loc-face">
+      <img class="loc-img" id="locImg" alt="">
+      <div class="loc-over">
+        <div class="loc-env" id="locEnv"><i></i></div>
+        <p class="loc-title" id="locTitle"></p>
+        <p class="loc-msg" id="locMsg"></p>
+      </div>
+    </div>
     <button type="button" class="btn btn-gold" id="locAgain">Hái thêm một lộc</button>
   </div>
 </dialog>
@@ -213,6 +230,6 @@
   <p class="bro-note" id="broNote"></p>
 </dialog>
 
-<script type="module" src="js/app.js"></script>
+<script type="module" src="js/app.js?v=7"></script>
 </body>
 </html>
