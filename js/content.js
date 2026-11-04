@@ -1,4 +1,4 @@
-import { CONFIG } from './config.js?v=8';
+import { CONFIG } from './config.js?v=9';
 
 /* Gộp nội dung đã chỉnh trong data/content.json lên bản mặc định.
    Đối tượng thì gộp từng mục, danh sách thì thay hẳn. */

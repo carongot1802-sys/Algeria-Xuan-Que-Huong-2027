@@ -1,4 +1,4 @@
-import { loadConfig, applyTheme } from './content.js?v=8';
+import { loadConfig, applyTheme } from './content.js?v=9';
 
 const C = await loadConfig();
 applyTheme(C);
@@ -104,6 +104,12 @@ async function initDocs() {
 /* ================= Proposal ================= */
 const roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
 function initProposal() {
+  try { buildProposal(); } catch (err) {
+    console.error(err);
+    $('#propBody').innerHTML = `<p class="pintro">Không dựng được nội dung Proposal (${esc(err.message)}). Hãy tải lại trang bằng Ctrl+F5. Nếu vẫn lỗi, kiểm tra các file trong thư mục js đã được cập nhật đủ.</p>`;
+  }
+}
+function buildProposal() {
   const P = C.proposal, O = P.overview, T = P.timeline;
   $('#pTitle').textContent = P.title;
   $('#pLead').textContent = P.lead;
@@ -155,12 +161,14 @@ function initProposal() {
   window.addEventListener('scroll', prog, { passive: true }); prog();
 }
 
-/* Hiện dần từng khối khi cuộn tới */
+/* Hiện dần từng khối khi cuộn tới. Mặc định mọi khối đều hiện, chỉ khi hiệu ứng chạy được mới ẩn trước rồi hiện dần */
 function initReveal(rootSel) {
-  const items = $$(rootSel + ' .rv');
+  const root = $(rootSel), items = $$(rootSel + ' .rv');
   if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { items.forEach(i => i.classList.add('in')); return; }
-  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -6% 0px', threshold: 0 });
+  root.classList.add('rv-on');
   items.forEach(i => io.observe(i));
+  setTimeout(() => { if (!items.some(i => i.classList.contains('in'))) root.classList.remove('rv-on'); }, 2000);   // phòng khi trình duyệt không báo
 }
 
 /* ================= Moodboard ================= */
@@ -336,7 +344,7 @@ const VIEW_BUTTONS = [['overview', 'Toàn cảnh'], ['gate', 'Từ cổng vào']
 async function initSpace() {
   const loading = $('#spaceLoading');
   let mod;
-  try { mod = await import('./scene3d.js?v=8'); }
+  try { mod = await import('./scene3d.js?v=9'); }
   catch (err) {
     console.error(err);
     loading.textContent = 'Không tải được thư viện 3D. Hãy kiểm tra kết nối mạng rồi tải lại trang.';

@@ -1,4 +1,4 @@
-import { loadConfig, FONT_OPTIONS } from './content.js?v=8';
+import { loadConfig, FONT_OPTIONS } from './content.js?v=9';
 
 const $ = (s, r = document) => r.querySelector(s);
 let S = null;                       // bản nội dung đang chỉnh
