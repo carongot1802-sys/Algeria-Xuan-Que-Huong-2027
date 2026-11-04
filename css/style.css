@@ -533,9 +533,9 @@ figcaption.cap { font-size: .84rem; color: var(--muted); margin-top: 8px; text-a
 .toc-part:first-child { margin-top: 0; }
 .prop-body { min-width: 0; }
 
-.rv { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s cubic-bezier(.2, .7, .2, 1); transition-delay: calc(var(--i, 0) * 90ms); }
-.rv.in { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; transition: none; } }
+.rv-on .rv { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s cubic-bezier(.2, .7, .2, 1); transition-delay: calc(var(--i, 0) * 90ms); }
+.rv-on .rv.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .rv-on .rv { opacity: 1; transform: none; transition: none; } }
 
 .ppart { display: flex; align-items: baseline; gap: 18px; margin: 8px 0 34px; padding: 22px 26px; border-radius: 4px; color: var(--gold-soft);
   background: linear-gradient(120deg, var(--lacquer-2), var(--lacquer)); border-bottom: 3px solid var(--gold); }
