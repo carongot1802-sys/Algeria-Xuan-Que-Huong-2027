@@ -1,6 +1,6 @@
 # Kế hoạch truyền thông Xuân Quê hương 2027
 
-Trang web trình bày kế hoạch truyền thông gồm sáu phần theo thứ tự xem: mở đầu, nội dung trình bày, proposal (slide), moodboard và visual cue, không gian 3D khu sân tổ chức, lời cảm ơn.
+Trang web trình bày kế hoạch truyền thông gồm sáu phần theo thứ tự xem: mở đầu, nội dung trình bày, proposal (kế hoạch và timeline trình bày thẳng trên trang), moodboard và visual cue, không gian 3D khu sân tổ chức, lời cảm ơn.
 
 ## Đưa lên GitHub Pages
 
@@ -10,7 +10,7 @@ Không mở index.html bằng cách bấm đúp trên máy, vì trình duyệt s
 
 ## Trang quản trị
 
-Mở địa chỉ trang web rồi thêm /admin.html (trang web không còn đường dẫn công khai tới trang quản trị, hãy lưu địa chỉ này lại). Ở đó chỉnh được chữ, tài liệu, link Canva hoặc ảnh slide, ảnh moodboard, bảng màu, font, elements, phông nền 3D, bảng hiệu Đại sứ quán, tên tiếng Pháp của gian hàng, câu đối, các thông điệp và ảnh thẻ lì xì của phần hái lộc đầu xuân, ảnh hai mặt brochure, thiết kế phông nền ở mục sản phẩm truyền thông, món ăn buffet, mô tả từng khu và lời cảm ơn. Thêm, bớt, đổi thứ tự ảnh đều làm bằng nút, không cần sửa code.
+Mở địa chỉ trang web rồi thêm /admin.html (trang web không còn đường dẫn công khai tới trang quản trị, hãy lưu địa chỉ này lại). Ở đó chỉnh được chữ, tài liệu, nội dung kế hoạch tổng quan và timeline ở mục Proposal, ảnh moodboard, bảng màu, font, elements, phông nền 3D, bảng hiệu Đại sứ quán, tên tiếng Pháp của gian hàng, câu đối, các thông điệp và ảnh thẻ lì xì của phần hái lộc đầu xuân, ảnh hai mặt brochure, thiết kế phông nền ở mục sản phẩm truyền thông, món ăn buffet, mô tả từng khu và lời cảm ơn. Thêm, bớt, đổi thứ tự ảnh đều làm bằng nút, không cần sửa code.
 
 Để xuất bản thay đổi cần một token GitHub. Vào github.com, bấm ảnh đại diện, Settings, kéo xuống Developer settings, Personal access tokens, Fine-grained tokens, Generate new token. Chọn Only select repositories và chọn đúng repo này. Ở mục Repository permissions, đặt Contents thành Read and write. Tạo token rồi sao chép ngay. Trong trang quản trị bấm Kết nối GitHub, điền tên tài khoản, tên repo, dán token, rồi bấm Kết nối. Sau khi kết nối thành công, nút kết nối tự ẩn đi. Sau khi chỉnh xong bấm Xuất bản, khoảng một phút sau trang web cập nhật. Chỉ người có token mới xuất bản được, nên đừng chia sẻ token.
 

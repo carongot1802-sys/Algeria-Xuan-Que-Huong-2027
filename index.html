@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/style.css?v=8">
   <script type="importmap">
   {
     "imports": {
@@ -64,7 +64,7 @@
         </a>
       </div>
       <ol class="flow" aria-label="Thứ tự xem sau phần Proposal">
-        <li>Slide proposal</li>
+        <li>Proposal, kế hoạch và timeline</li>
         <li>Moodboard và visual cue</li>
         <li>Không gian 3D khu sân tổ chức</li>
       </ol>
@@ -72,13 +72,16 @@
   </section>
 
   <section class="view view-proposal" id="view-proposal" data-route="/proposal">
+    <div class="pbar" id="pBar" aria-hidden="true"><i></i></div>
     <div class="page page-wide">
       <h2 id="pTitle"></h2>
       <p class="lead" id="pLead"></p>
-      <div class="slide-frame" id="slideHost"></div>
+      <div class="mood-layout prop-layout">
+        <nav class="toc" id="pToc" aria-label="Mục lục trang Proposal"></nav>
+        <div class="prop-body" id="propBody"></div>
+      </div>
       <div class="pager">
         <a class="btn btn-line" href="#/noi-dung">Quay lại</a>
-        <button class="btn btn-line" id="slideFull" type="button">Toàn màn hình</button>
         <a class="btn btn-red" href="#/moodboard">Tiếp tục tới Moodboard</a>
       </div>
     </div>
@@ -121,7 +124,7 @@
         </div>
       </div>
       <div class="pager">
-        <a class="btn btn-line" href="#/proposal">Quay lại slide</a>
+        <a class="btn btn-line" href="#/proposal">Quay lại Proposal</a>
         <a class="btn btn-red" href="#/khong-gian">Tiếp tục tới không gian 3D</a>
       </div>
     </div>
@@ -230,6 +233,6 @@
   <p class="bro-note" id="broNote"></p>
 </dialog>
 
-<script type="module" src="js/app.js?v=7"></script>
+<script type="module" src="js/app.js?v=8"></script>
 </body>
 </html>
