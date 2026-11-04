@@ -1,4 +1,4 @@
-import { CONFIG } from './config.js?v=7';
+import { CONFIG } from './config.js?v=8';
 
 /* Gộp nội dung đã chỉnh trong data/content.json lên bản mặc định.
    Đối tượng thì gộp từng mục, danh sách thì thay hẳn. */
@@ -49,6 +49,10 @@ export async function loadConfig(bust = true) {
     if (r.ok) {
       const j = await r.json();
       if ((j.zonesRev || 0) < CONFIG.zonesRev) delete j.zones;
+      if ((j.proposalRev || 0) < CONFIG.proposalRev) {                 // Proposal trình bày thẳng trên web, bỏ phần slide Canva cũ
+        delete j.proposal;
+        if (j.content) { delete j.content.proposalDesc; delete j.content.proposalButton; delete j.content.lead; }
+      }
       if ((j.themeRev || 0) < CONFIG.themeRev && j.theme) {       // giao diện mới: bỏ font tiêu đề mặc định cũ và bộ màu chữ cũ
         if (j.theme.headingFont === 'Cormorant Garamond') delete j.theme.headingFont;
         delete j.theme.colors;

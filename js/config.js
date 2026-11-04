@@ -32,12 +32,12 @@ export const CONFIG = {
 
   content: {
     title: 'Nội dung trình bày',
-    lead: 'Chọn cách xem phù hợp. Kho tài liệu dùng để tải bản kế hoạch về trình bày với Đại sứ, còn phần Proposal dẫn qua toàn bộ kế hoạch bằng slide, rồi tới moodboard và không gian 3D của sân tổ chức.',
+    lead: 'Chọn cách xem phù hợp. Kho tài liệu dùng để tải bản kế hoạch về trình bày với Đại sứ, còn phần Proposal trình bày toàn bộ kế hoạch ngay trên trang, rồi tới moodboard và không gian 3D của sân tổ chức.',
     docsTitle: 'Kho lưu trữ tài liệu mềm',
     docsDesc: 'Bản kế hoạch truyền thông tổng quan dạng văn bản, phục vụ tải về để chỉnh sửa hoặc in.',
     proposalTitle: 'Proposal',
-    proposalDesc: 'Xem kế hoạch truyền thông tổng quan và timeline truyền thông online, offline dưới dạng slide.',
-    proposalButton: 'Mở phần slide'
+    proposalDesc: 'Xem kế hoạch truyền thông tổng quan và timeline truyền thông online, offline của chương trình.',
+    proposalButton: 'Mở phần Proposal'
   },
 
   documents: [
@@ -47,9 +47,69 @@ export const CONFIG = {
 
   proposal: {
     title: 'Proposal truyền thông',
-    lead: 'Kế hoạch truyền thông tổng quan, timeline truyền thông online và offline.',
-    canvaEmbedUrl: '',
-    slideImages: []
+    lead: 'Kế hoạch truyền thông tổng quan và timeline truyền thông online, offline cho chương trình Xuân Quê hương Đinh Mùi 2027 tại Algeria.',
+    overview: {
+      title: 'Kế hoạch truyền thông tổng quan',
+      info: [
+        { k: 'Tên chương trình', v: 'Xuân Quê hương - Đinh Mùi 2027 tại Algeria.' },
+        { k: 'Thời gian, địa điểm', v: 'Dự kiến đầu tháng 02/2027 tại Algiers; ngày, giờ và địa điểm cụ thể do Đại sứ quán phê duyệt.' },
+        { k: 'Quy mô, công chúng', v: 'Khoảng 150 khách mời: cộng đồng người Việt Nam tại Algeria; đại diện chính quyền, tổ chức và bạn bè sở tại.' },
+        { k: 'Hình thức tổ chức', v: 'Chương trình gặp mặt, chúc Tết kết hợp giao lưu và trải nghiệm văn hóa truyền thống Việt Nam, với các hoạt động dự kiến như biểu diễn văn nghệ, gói bánh chưng, thưởng trà và cà phê Việt, thưởng thức ẩm thực truyền thống, giao lưu và chụp ảnh lưu niệm.' },
+        { k: 'Phương châm truyền thông', v: 'Lấy không khí sum vầy và các hoạt động trải nghiệm văn hóa làm trọng tâm, qua đó khơi gợi tình cảm gắn bó với quê hương trong cộng đồng người Việt Nam tại Algeria. Đồng thời, giới thiệu những nét đặc sắc của Tết cổ truyền và lan tỏa hình ảnh một Việt Nam giàu bản sắc, thân thiện, hiếu khách tới bạn bè sở tại.' }
+      ],
+      purpose: 'Tạo không gian đón Tết ấm áp, gắn kết cộng đồng người Việt Nam tại Algeria, khơi gợi tình yêu quê hương và ý thức gìn giữ bản sắc văn hóa dân tộc. Đồng thời, giới thiệu những nét đẹp của Tết cổ truyền tới bạn bè sở tại, góp phần tăng cường sự hiểu biết và tình hữu nghị Việt Nam - Algeria.',
+      goals: [
+        { k: 'Về nhận thức', v: 'Giúp cộng đồng người Việt, đặc biệt là thế hệ trẻ tại Algeria, hiểu và trân trọng các giá trị văn hóa truyền thống. Đồng thời, giúp khách mời sở tại tìm hiểu ý nghĩa Tết Nguyên đán, phong tục sum họp và nét đẹp văn hóa Việt Nam thông qua các hoạt động trải nghiệm và ấn phẩm song ngữ.' },
+        { k: 'Về cảm nhận', v: 'Khơi gợi tình cảm gắn bó, niềm tự hào quê hương và tinh thần đoàn kết trong cộng đồng người Việt; đồng thời thể hiện sự quan tâm của Đại sứ quán đối với kiều bào. Qua các hoạt động giao lưu, tạo ấn tượng tốt đẹp về một Việt Nam giàu bản sắc, thân thiện và hiếu khách trong lòng bạn bè Algeria.' },
+        { k: 'Về hành vi', v: 'Khuyến khích cộng đồng người Việt tích cực giao lưu, tham gia các hoạt động đón Tết, chia sẻ và gìn giữ phong tục truyền thống. Đồng thời, tạo cơ hội để khách mời sở tại trải nghiệm gói bánh chưng, thưởng thức ẩm thực, trà, cà phê Việt và các tiết mục văn nghệ, qua đó lan tỏa văn hóa Việt Nam và tăng cường sự kết nối giữa hai cộng đồng.' }
+      ],
+      audienceIntro: 'Chương trình hướng tới cộng đồng người Việt Nam tại Algeria, đồng thời mở rộng hoạt động giao lưu văn hóa tới đại diện chính quyền và bạn bè sở tại. Nội dung truyền thông được xây dựng phù hợp với đặc điểm của từng nhóm công chúng.',
+      audiences: [
+        { group: 'Cộng đồng người Việt tại Algeria', need: 'Mong muốn đón Tết trong không khí quê nhà, gặp gỡ đồng hương, gắn kết các thế hệ và gìn giữ bản sắc dân tộc.', approach: 'Khơi gợi tinh thần đoàn viên, tình yêu quê hương thông qua các hoạt động đón Tết, gói bánh chưng, giao lưu và chia sẻ những khoảnh khắc sum vầy.' },
+        { group: 'Đại diện chính quyền, cơ quan và khách mời sở tại', need: 'Quan tâm đến văn hóa, hình ảnh đất nước, con người Việt Nam và quan hệ hữu nghị Việt Nam - Algeria.', approach: 'Đề cao tính trang trọng và giao lưu văn hóa thông qua phát biểu, giới thiệu phong tục Tết, ấn phẩm song ngữ và các hoạt động trải nghiệm.' },
+        { group: 'Bạn bè Algeria, gia đình Việt - Algeria', need: 'Mong muốn tìm hiểu văn hóa, phong tục và ẩm thực Việt Nam qua những trải nghiệm gần gũi.', approach: 'Giới thiệu bản sắc văn hóa Việt Nam qua hoạt động gói bánh chưng, thưởng thức ẩm thực, trà, cà phê và văn nghệ truyền thống.' },
+        { group: 'Công chúng tiếp cận qua các kênh truyền thông của Đại sứ quán', need: 'Quan tâm đến hoạt động cộng đồng và những nét đặc sắc trong văn hóa Việt Nam.', approach: 'Lan tỏa hình ảnh Tết Việt qua bài tổng kết, hình ảnh nổi bật trên Facebook và bản tin chính thức trên website Đại sứ quán.' }
+      ],
+      keyMessage: '“Xuân Quê hương - Đinh Mùi 2027” là dịp cộng đồng người Việt tại Algeria sum họp, cùng bạn bè sở tại trải nghiệm hương vị và phong tục Tết Việt, qua đó tăng cường gắn kết với quê hương và vun đắp tình hữu nghị giữa nhân dân hai nước.',
+      hookName: 'Gói trọn Xuân quê',
+      hook: 'Key visual của chương trình lấy hình con dê vàng, biểu tượng năm Đinh Mùi, làm trung tâm; hình ảnh bánh chưng được dùng làm điểm nhấn trên các ấn phẩm, tượng trưng cho việc gìn giữ truyền thống và chia sẻ văn hóa. Đây là ý tưởng hỗ trợ nội dung, không thay thế tên gọi chính thức hay làm lu mờ tính trang trọng của sự kiện.',
+      pillars: [
+        { name: 'Xuân đoàn viên', focus: 'Gắn kết cộng đồng người Việt xa quê, khơi gợi tình cảm hướng về quê hương và sự kết nối giữa các thế hệ.', activities: 'Gặp mặt, chúc Tết, giao lưu đồng hương, ghi lại những khoảnh khắc sum vầy.' },
+        { name: 'Xuân mang bản sắc', focus: 'Gìn giữ, giới thiệu và lan tỏa các giá trị văn hóa truyền thống Việt Nam.', activities: 'Tìm hiểu văn hóa, văn nghệ, gói bánh chưng, thưởng trà, cà phê Việt, thưởng thức ẩm thực, tìm hiểu phong tục Tết cổ truyền.' },
+        { name: 'Xuân của tình hữu nghị', focus: 'Tôn vinh sự giao lưu, gắn kết giữa cộng đồng người Việt Nam và bạn bè Algeria. Qua đó, góp phần tăng cường sự hiểu biết, tình cảm hữu nghị và lan tỏa hình ảnh đất nước.', activities: 'Thưởng thức ẩm thực truyền thống, biểu diễn văn nghệ và cùng trải nghiệm văn hóa Tết Việt.' }
+      ],
+      phases: [
+        { k: 'Trước sự kiện', v: 'Phối hợp gửi thư mời, xác nhận khách tham dự, chuẩn bị brochure song ngữ Việt - Pháp, backdrop, ấn phẩm giới thiệu các hoạt động trải nghiệm và kế hoạch ghi hình, chụp ảnh. Trên kênh online, đăng thông báo chương trình cùng key visual, giới thiệu các hoạt động trải nghiệm và đăng bài nhắc lịch trước ngày diễn ra.' },
+        { k: 'Trong sự kiện', v: 'Bố trí ấn phẩm truyền thông, ghi nhận thông tin và hình ảnh các hoạt động nổi bật, tập trung vào không khí đoàn viên, hoạt động chúc Tết, trải nghiệm văn hóa và giao lưu Việt Nam - Algeria.' },
+        { k: 'Sau sự kiện', v: 'Biên tập 01 bài tổng kết trên Facebook kèm 8-12 ảnh tiêu biểu và 01 bản tin trên website Đại sứ quán kèm 4-6 ảnh. Nội dung được kiểm duyệt trước khi đăng tải, dự kiến trong 1-3 ngày làm việc sau chương trình.' }
+      ],
+      channels: [
+        { k: 'Online', v: 'Sử dụng Facebook và website chính thức của Đại sứ quán để đăng tải bài thông báo, giới thiệu chương trình và nhắc lịch trước sự kiện, bài viết tổng kết, hình ảnh các hoạt động nổi bật và thông tin về chương trình sau sự kiện. Nội dung được kiểm duyệt trước khi công bố.' },
+        { k: 'Offline', v: 'Triển khai thư mời chính thức, backdrop, brochure song ngữ Việt - Pháp, bảng giới thiệu tại các khu trải nghiệm văn hóa và các vật phẩm trang trí Tết, góp phần tạo không gian ấm cúng, trang trọng và quảng bá bản sắc văn hóa Việt Nam.' }
+      ]
+    },
+    timeline: {
+      title: 'Timeline truyền thông',
+      note: 'D là ngày diễn ra sự kiện. Các mốc tính theo tuần hoặc ngày so với ngày D.',
+      groups: [
+        { name: 'Trước sự kiện', rows: [
+          { when: '4-5 tuần trước sự kiện', offline: ['Chốt ngày, giờ, địa điểm với ĐSQ', 'Chốt danh sách khách mời (~150 người)', 'Chốt key visual “Gói trọn Xuân quê” và nội dung brochure VI-FR'], online: ['Chuẩn bị sẵn khung bài Facebook và bản tin website', 'Chốt nội dung và lịch đăng, gửi ĐSQ duyệt kế hoạch bài'] },
+          { when: 'D-4 tuần', offline: ['Hoàn thiện thiết kế backdrop, brochure song ngữ, bảng giới thiệu các khu trải nghiệm', 'Gửi ĐSQ duyệt'], online: [] },
+          { when: 'D-3 tuần', offline: ['Gửi thư mời chính thức', 'Gửi in backdrop, brochure, bảng giới thiệu'], online: [] },
+          { when: 'D-2 tuần', offline: ['Theo dõi và xác nhận khách tham dự', 'Lên kế hoạch ghi hình, chụp ảnh (phân công người chụp, danh sách khoảnh khắc cần có theo 3 pillar)'], online: ['Thông báo chương trình, key visual “Gói trọn Xuân quê”'] },
+          { when: 'D-1 tuần', offline: ['Nhận và kiểm tra ấn phẩm in', 'Chuẩn bị vật phẩm trang trí Tết', 'Chốt phương án bố trí không gian'], online: ['Giới thiệu các hoạt động trải nghiệm', 'Đăng hình ảnh thư mời tham dự Chương trình'] },
+          { when: 'D-1 hôm trước', offline: ['Dựng backdrop, bố trí ấn phẩm, bảng giới thiệu và đồ trang trí', 'Chạy thử, tổng duyệt'], online: ['Đăng bài nhắc lịch “ngày mai diễn ra” (thời gian, địa điểm)'] }
+        ] },
+        { name: 'Ngày sự kiện', rows: [
+          { when: 'D', offline: ['Phát brochure cho khách', 'Ghi hình, chụp ảnh các điểm nhấn: chúc Tết, văn nghệ, gói bánh chưng, trà, cà phê, ẩm thực, giao lưu Việt - Algeria'], online: ['Ghi nhận hình ảnh, thông tin để làm bài tổng kết'] }
+        ] },
+        { name: 'Sau sự kiện', rows: [
+          { when: 'D+1', offline: ['Lọc ảnh', 'Rà soát thông tin (tên, chức danh khách mời)'], online: ['Soạn bài tổng kết Facebook (8-12 ảnh)', 'Soạn bản tin website (4-6 ảnh)'] },
+          { when: 'D+1 đến D+2', offline: ['Gửi ĐSQ kiểm duyệt nội dung'], online: ['Chỉnh sửa theo góp ý của ĐSQ'] },
+          { when: 'D+1 đến D+3 ngày làm việc', offline: [], online: ['Đăng bài lên Facebook và website chính thức của ĐSQ'] }
+        ] }
+      ]
+    }
   },
 
   moodboard: {
@@ -152,6 +212,7 @@ export const CONFIG = {
     sign: 'Nhóm Thực tập sinh, Đại sứ quán Việt Nam tại Algeria'
   },
 
+  proposalRev: 1,
   zonesRev: 3,
   themeRev: 1,
   zones: [

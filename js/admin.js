@@ -1,4 +1,4 @@
-import { loadConfig, FONT_OPTIONS } from './content.js?v=6';
+import { loadConfig, FONT_OPTIONS } from './content.js?v=8';
 
 const $ = (s, r = document) => r.querySelector(s);
 let S = null;                       // bản nội dung đang chỉnh
@@ -137,15 +137,37 @@ const VIEWS = {
         [h('button', { class: 'b b-red b-sm', type: 'button', onclick: () => { S.documents.push({ label: 'Tài liệu mới', file: '', note: '' }); touch(); render(); } }, 'Thêm tài liệu')], render)];
   },
   proposal() {
-    const p = S.proposal;
-    return [h('h2', {}, 'Proposal'), field('Tiêu đề', p, 'title'), field('Dòng giới thiệu', p, 'lead'),
-      h('h3', {}, 'Cách 1, nhúng Canva'),
-      h('p', { class: 'hint' }, 'Trên Canva chọn Chia sẻ, Xem thêm, Nhúng, rồi dán link dạng https://www.canva.com/design/XXXX/view?embed'),
-      field('Link nhúng Canva', p, 'canvaEmbedUrl', { type: 'url', ph: 'https://www.canva.com/design/...' }),
-      h('h3', {}, 'Cách 2, ảnh từng slide'),
-      h('p', { class: 'hint' }, 'Chỉ dùng khi ô Canva ở trên để trống. Bấm qua slide cuối sẽ tự sang Moodboard.'),
-      list(p.slideImages, (u, i) => h('div', { class: 'imgbox' }, h('div', { class: 'thumb', style: `background-image:url("${src(u)}")` }), h('div', {}, h('b', {}, `Slide ${i + 1}`))),
-        [addImagesBtn(p.slideImages, 'Thêm ảnh slide', render, path => path)], render)];
+    const p = S.proposal, O = p.overview, T = p.timeline;
+    const lines = (label, obj, key) => {
+      const t = h('textarea', { placeholder: 'Mỗi dòng là một ý' });
+      t.value = (obj[key] || []).join('\n');
+      t.addEventListener('input', () => { obj[key] = t.value.split('\n').map(x => x.trim()).filter(Boolean); touch(); });
+      return h('label', {}, label, t);
+    };
+    const kv = (arr, addLabel, kLabel = 'Tiêu đề', vLabel = 'Nội dung') => list(arr,
+      it => h('div', {}, field(kLabel, it, 'k'), field(vLabel, it, 'v', { area: true })),
+      [h('button', { class: 'b b-red b-sm', type: 'button', onclick: () => { arr.push({ k: '', v: '' }); touch(); render(); } }, addLabel)], render);
+    return [h('h2', {}, 'Proposal'),
+      h('p', { class: 'hint' }, 'Nội dung kế hoạch và timeline hiện thẳng trên trang Proposal, không cần Canva hay slide. Sửa chữ ở đây rồi bấm Xuất bản.'),
+      field('Tiêu đề trang', p, 'title'), field('Dòng giới thiệu', p, 'lead', { area: true }),
+
+      h('h3', {}, 'Phần I, kế hoạch tổng quan'), field('Tên phần', O, 'title'),
+      h('b', {}, '1. Thông tin chung'), kv(O.info, 'Thêm dòng', 'Mục', 'Nội dung'),
+      h('b', {}, '2. Mục đích và mục tiêu'), field('Mục đích', O, 'purpose', { area: true }), kv(O.goals, 'Thêm mục tiêu', 'Tên mục tiêu', 'Nội dung'),
+      h('b', {}, '3. Đối tượng và cách tiếp cận'), field('Đoạn dẫn', O, 'audienceIntro', { area: true }),
+      list(O.audiences, it => h('div', {}, field('Nhóm công chúng', it, 'group'), field('Đặc điểm và nhu cầu', it, 'need', { area: true }), field('Nội dung và cách tiếp cận', it, 'approach', { area: true })),
+        [h('button', { class: 'b b-red b-sm', type: 'button', onclick: () => { O.audiences.push({ group: '', need: '', approach: '' }); touch(); render(); } }, 'Thêm nhóm')], render),
+      h('b', {}, '4. Thông điệp và trụ cột'), field('Thông điệp trung tâm', O, 'keyMessage', { area: true }), field('Tên ý tưởng (key hook)', O, 'hookName'), field('Mô tả key hook', O, 'hook', { area: true }),
+      list(O.pillars, it => h('div', {}, field('Tên trụ cột', it, 'name'), field('Nội dung trọng tâm', it, 'focus', { area: true }), field('Hoạt động', it, 'activities', { area: true })),
+        [h('button', { class: 'b b-red b-sm', type: 'button', onclick: () => { O.pillars.push({ name: '', focus: '', activities: '' }); touch(); render(); } }, 'Thêm trụ cột')], render),
+      h('b', {}, '5. Hoạt động theo giai đoạn'), kv(O.phases, 'Thêm giai đoạn', 'Giai đoạn', 'Nội dung'),
+      h('b', {}, '6. Kênh triển khai'), kv(O.channels, 'Thêm kênh', 'Kênh', 'Nội dung'),
+
+      h('h3', {}, 'Phần II, timeline'), field('Tên phần', T, 'title'), field('Ghi chú đầu bảng', T, 'note', { area: true }),
+      list(T.groups, g => h('div', {}, field('Tên giai đoạn', g, 'name'),
+        list(g.rows, r => h('div', {}, field('Mốc thời gian', r, 'when'), lines('Offline', r, 'offline'), lines('Online', r, 'online')),
+          [h('button', { class: 'b b-line b-sm', type: 'button', onclick: () => { g.rows.push({ when: '', offline: [], online: [] }); touch(); render(); } }, 'Thêm mốc')], render)),
+        [h('button', { class: 'b b-red b-sm', type: 'button', onclick: () => { T.groups.push({ name: 'Giai đoạn mới', rows: [] }); touch(); render(); } }, 'Thêm giai đoạn')], render)];
   },
   mood() {
     const m = S.moodboard;

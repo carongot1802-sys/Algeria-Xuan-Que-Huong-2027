@@ -1,4 +1,4 @@
-import { loadConfig, applyTheme } from './content.js?v=7';
+import { loadConfig, applyTheme } from './content.js?v=8';
 
 const C = await loadConfig();
 applyTheme(C);
@@ -17,7 +17,6 @@ const ROUTES = ['/', '/noi-dung', '/proposal', '/moodboard', '/khong-gian', '/ca
 let current = null;
 const inited = new Set();
 let space = null;
-let slides = null;
 
 /* ================= Định tuyến ================= */
 function routeFromHash() {
@@ -103,50 +102,66 @@ async function initDocs() {
 }
 
 /* ================= Proposal ================= */
+const roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
 function initProposal() {
-  const host = $('#slideHost');
-  const { canvaEmbedUrl, slideImages } = C.proposal;
-  if (canvaEmbedUrl) {
-    host.appendChild(el('iframe', { src: canvaEmbedUrl, title: 'Slide proposal', allowfullscreen: '', loading: 'lazy', allow: 'fullscreen' }));
-  } else if (slideImages.length) {
-    let i = 0;
-    const img = el('img', { class: 'slide-img', alt: '' });
-    const ctrl = el('div', { class: 'slide-ctrl' }, `
-      <button type="button" id="sPrev">Trước</button>
-      <div class="slide-bar"><i id="sBar"></i></div>
-      <span id="sCount"></span>
-      <button type="button" id="sNext">Sau</button>`);
-    host.append(img, ctrl);
-    const render = () => {
-      img.src = slideImages[i]; img.alt = `Slide ${i + 1}`;
-      $('#sCount', ctrl).textContent = `${i + 1} / ${slideImages.length}`;
-      $('#sBar', ctrl).style.width = `${((i + 1) / slideImages.length) * 100}%`;
-      $('#sPrev', ctrl).disabled = i === 0;
-      $('#sNext', ctrl).textContent = i === slideImages.length - 1 ? 'Sang Moodboard' : 'Sau';
-    };
-    const next = () => { if (i < slideImages.length - 1) { i++; render(); } else location.hash = '#/moodboard'; };
-    const prev = () => { if (i > 0) { i--; render(); } };
-    $('#sPrev', ctrl).onclick = prev; $('#sNext', ctrl).onclick = next;
-    slides = { next, prev };
-    let x0 = null;
-    host.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
-    host.addEventListener('touchend', e => {
-      if (x0 === null) return;
-      const dx = e.changedTouches[0].clientX - x0; x0 = null;
-      if (Math.abs(dx) > 50) (dx < 0 ? next : prev)();
-    });
-    render();
-  } else {
-    host.innerHTML = `<div class="slide-empty"><b>Slide proposal sẽ hiện ở đây</b><span>Dán link nhúng Canva hoặc tải ảnh slide lên trong trang quản trị, mục Proposal.</span></div>`;
-  }
-  $('#slideFull').onclick = () => { if (host.requestFullscreen) host.requestFullscreen(); };
+  const P = C.proposal, O = P.overview, T = P.timeline;
+  $('#pTitle').textContent = P.title;
+  $('#pLead').textContent = P.lead;
+  const lines = a => (a && a.length) ? `<ul>${a.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '<p class="tl-none">Không có hoạt động</p>';
+  const sec = (id, no, title, body) =>
+    `<section class="psec rv" id="${id}"><header class="psec-h"><span class="pno">${no}</span><h3>${esc(title)}</h3></header>${body}</section>`;
+  const part = (n, title) => `<div class="ppart rv"><span>Phần ${n}</span><h3>${esc(title)}</h3></div>`;
+
+  const info = `<dl class="ledger">${O.info.map(r => `<div class="rv"><dt>${esc(r.k)}</dt><dd>${esc(r.v)}</dd></div>`).join('')}</dl>`;
+  const goals = `<p class="purpose rv"><b>Mục đích</b>${esc(O.purpose)}</p>
+    <div class="trio">${O.goals.map((g, i) => `<article class="gcard rv" style="--i:${i}"><span class="gno">${i + 1}</span><h4>${esc(g.k)}</h4><p>${esc(g.v)}</p></article>`).join('')}</div>`;
+  const aud = `<p class="pintro rv">${esc(O.audienceIntro)}</p>
+    <div class="audgrid">${O.audiences.map((x, i) => `<article class="acard rv" style="--i:${i % 2}"><h4>${esc(x.group)}</h4>
+      <p><small>Đặc điểm và nhu cầu</small>${esc(x.need)}</p><p><small>Nội dung và cách tiếp cận</small>${esc(x.approach)}</p></article>`).join('')}</div>`;
+  const msg = `<blockquote class="keymsg rv"><small>Thông điệp trung tâm</small>${esc(O.keyMessage)}</blockquote>
+    <div class="hook rv"><div><small>Ý tưởng triển khai</small><b>“${esc(O.hookName)}”</b></div><p>${esc(O.hook)}</p></div>
+    <div class="pillars">${O.pillars.map((x, i) => `<article class="pill rv" style="--i:${i}"><span class="pill-no">Trụ cột ${i + 1}</span><h4>${esc(x.name)}</h4>
+      <p>${esc(x.focus)}</p><p class="pill-act"><small>Hoạt động</small>${esc(x.activities)}</p></article>`).join('')}</div>`;
+  const phases = `<ol class="phases">${O.phases.map((x, i) => `<li class="rv" style="--i:${i}"><span class="ph-dot">${i + 1}</span><h4>${esc(x.k)}</h4><p>${esc(x.v)}</p></li>`).join('')}</ol>`;
+  const chans = `<div class="chans">${O.channels.map((x, i) => `<article class="chan rv" style="--i:${i}"><h4>${esc(x.k)}</h4><p>${esc(x.v)}</p></article>`).join('')}</div>`;
+  const tl = `<p class="pintro rv">${esc(T.note)}</p>
+    <div class="tl-head rv" aria-hidden="true"><span></span><b>Offline</b><b>Online</b></div>
+    ${T.groups.map(g => `<div class="tl-group"><h4 class="tl-gname rv">${esc(g.name)}</h4>${g.rows.map(r => `
+      <div class="tl-row rv"><div class="tl-when"><i></i><b>${esc(r.when)}</b></div>
+        <div class="tl-col off" data-l="Offline">${lines(r.offline)}</div><div class="tl-col on" data-l="Online">${lines(r.online)}</div></div>`).join('')}</div>`).join('')}`;
+
+  const parts = [
+    ['pp-1', part('I', O.title)],
+    ['sec-info', 'Thông tin chung', info], ['sec-goal', 'Mục đích và mục tiêu', goals], ['sec-aud', 'Đối tượng và cách tiếp cận', aud],
+    ['sec-msg', 'Thông điệp, ý tưởng chủ đạo và nội dung trọng tâm', msg], ['sec-phase', 'Hoạt động theo ba giai đoạn', phases], ['sec-chan', 'Kênh triển khai', chans],
+    ['pp-2', part('II', T.title)], ['sec-time', 'Timeline online và offline', tl]
+  ];
+  let n = 0, html = '', navHtml = '';
+  parts.forEach(it => {
+    if (it[0].startsWith('pp-')) { html += it[1]; navHtml += `<span class="toc-part">${it[0] === 'pp-1' ? 'Phần I' : 'Phần II'}</span>`; return; }
+    n++; html += sec(it[0], String(n).padStart(2, '0'), it[1], it[2]);
+    navHtml += `<button type="button" data-target="${it[0]}"${n === 1 ? ' class="on"' : ''}>${esc(it[1].replace(/^Thông điệp.*/, 'Thông điệp và trụ cột'))}</button>`;
+  });
+  $('#propBody').innerHTML = html;
+  $('#pToc').innerHTML = navHtml;
+  initToc('#pToc', '/proposal');
+  initReveal('#propBody');
+  const bar = $('#pBar i');
+  const prog = () => {
+    if (current !== '/proposal') return;
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (h > 0 ? Math.min(100, (window.scrollY / h) * 100) : 0) + '%';
+  };
+  window.addEventListener('scroll', prog, { passive: true }); prog();
 }
-document.addEventListener('keydown', e => {
-  if (current === '/proposal' && slides) {
-    if (e.key === 'ArrowRight') slides.next();
-    if (e.key === 'ArrowLeft') slides.prev();
-  }
-});
+
+/* Hiện dần từng khối khi cuộn tới */
+function initReveal(rootSel) {
+  const items = $$(rootSel + ' .rv');
+  if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { items.forEach(i => i.classList.add('in')); return; }
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+  items.forEach(i => io.observe(i));
+}
 
 /* ================= Moodboard ================= */
 const viewer = { items: [], i: 0 };
@@ -180,8 +195,8 @@ function fillGallery(host, items, hintTitle, hintText, n = 4) {
   else for (let i = 0; i < n; i++) host.appendChild(placeholder(hintTitle, hintText));
 }
 
-function initToc() {
-  const btns = $$('#toc button');
+function initToc(navSel = '#toc', route = '/moodboard') {
+  const btns = $$(navSel + ' button');
   const secs = btns.map(b => $('#' + b.dataset.target));
   btns.forEach(b => b.onclick = () => { const t = $('#' + b.dataset.target); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
   const mark = () => {
@@ -190,7 +205,7 @@ function initToc() {
     secs.forEach((s, i) => { if (s && s.getBoundingClientRect().top < y) cur = i; });
     btns.forEach((b, i) => b.classList.toggle('on', i === cur));
   };
-  window.addEventListener('scroll', () => { if (current === '/moodboard') mark(); }, { passive: true });
+  window.addEventListener('scroll', () => { if (current === route) mark(); }, { passive: true });
   mark();
 }
 
@@ -321,7 +336,7 @@ const VIEW_BUTTONS = [['overview', 'Toàn cảnh'], ['gate', 'Từ cổng vào']
 async function initSpace() {
   const loading = $('#spaceLoading');
   let mod;
-  try { mod = await import('./scene3d.js?v=7'); }
+  try { mod = await import('./scene3d.js?v=8'); }
   catch (err) {
     console.error(err);
     loading.textContent = 'Không tải được thư viện 3D. Hãy kiểm tra kết nối mạng rồi tải lại trang.';

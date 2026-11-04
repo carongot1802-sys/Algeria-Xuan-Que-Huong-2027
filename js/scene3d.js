@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { buildWorld, GEO, STAGE_RECT, STAGE_H } from './world.js?v=7';
+import { buildWorld, GEO, STAGE_RECT, STAGE_H } from './world.js?v=8';
 
 const VIEWS = {
   overview: { p: [15, 12.5, 17],  t: [0, 0.4, -1.5] },
