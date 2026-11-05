@@ -425,25 +425,26 @@ $('#fbOpen').onclick = () => { $('#fbMsg').textContent = ''; fbRender(); $('#fbD
 $('#fbClose').onclick = () => $('#fbDlg').close();
 $('#fbDlg').addEventListener('click', e => { if (e.target.id === 'fbDlg') e.currentTarget.close(); });
 /* Nhận xét gửi thẳng về email của nhóm qua dịch vụ FormSubmit, đồng thời lưu một bản trên thiết bị */
-const FB_TO = 'thiminhngocnguyen22@gmail.com';
-const FB_CC = ['ngtrungthanh2505@gmail.com', 'hiendao2005@gmail.com'];
+/* Nhận xét gửi qua Web3Forms. Mỗi người nhận có một access key riêng (đăng ký bằng email tại web3forms.com),
+   thư được gửi tới tất cả các key trong C.feedbackKeys, chỉ cần một nơi nhận được là tính thành công. */
 $('#fbSave').onclick = async () => {
   const text = $('#fbText').value.trim(), who = $('#fbWho').value.trim(), msg = $('#fbMsg'), btn = $('#fbSave');
   if (!text) { msg.textContent = 'Hãy nhập nội dung nhận xét trước khi gửi.'; return; }
   const a = fbLoad(); a.push({ t: Date.now(), who, text }); fbStore(a);
+  const keys = (C.feedbackKeys || []).filter(k => String(k).trim());
   btn.disabled = true; msg.textContent = 'Đang gửi nhận xét...';
+  const send = key => fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({
+      access_key: key, subject: 'Nhận xét kế hoạch truyền thông Xuân Quê hương 2027', from_name: 'Web Xuân Quê hương 2027',
+      botcheck: '', 'Người nhận xét': who || 'Không ghi tên', 'Nhận xét': text, 'Thời gian': new Date().toLocaleString('vi-VN')
+    })
+  }).then(r => r.json()).then(j => { if (!j.success) throw new Error('send'); });
   try {
-    const r = await fetch('https://formsubmit.co/ajax/' + FB_TO, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({
-        _subject: 'Nhận xét kế hoạch truyền thông Xuân Quê hương 2027',
-        _cc: FB_CC.join(','), _template: 'table', _captcha: 'false',
-        'Người nhận xét': who || 'Không ghi tên', 'Nhận xét': text, 'Thời gian': new Date().toLocaleString('vi-VN')
-      })
-    });
-    const j = await r.json().catch(() => ({}));
-    if (!r.ok || String(j.success) === 'false') throw new Error('send');
+    if (!keys.length) throw new Error('nokey');
+    const res = await Promise.allSettled(keys.map(send));
+    if (!res.some(r => r.status === 'fulfilled')) throw new Error('send');
     $('#fbText').value = ''; msg.textContent = 'Đã gửi nhận xét tới nhóm thực hiện. Xin trân trọng cảm ơn.';
   } catch {
     msg.textContent = 'Chưa gửi được thư, nhận xét đã được lưu trên thiết bị này. Xin kiểm tra kết nối mạng rồi gửi lại.';

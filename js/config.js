@@ -6,6 +6,7 @@
 export const CONFIG = {
   eventName: 'Xuân Quê hương 2027',
   eventSub: 'Xuân Quê Hương - Đinh Mùi 2027',
+  feedbackKeys: [],   // dán access key Web3Forms của từng người nhận vào đây, mỗi key một dòng trong dấu nháy
   credit: 'Được thực hiện bởi: Nguyễn Thị Minh Ngọc, Đào Thu Hiền, Nguyễn Trung Thành',
   org: 'Đại sứ quán Việt Nam tại Algeria',
   team: 'Nhóm Thực tập sinh',
