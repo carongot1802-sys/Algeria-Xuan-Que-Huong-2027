@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { buildWorld, GEO, STAGE_RECT, STAGE_H } from './world.js?v=9';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { buildWorld, GEO, STAGE_RECT, STAGE_H } from './world.js?v=10';
 
 const VIEWS = {
   overview: { p: [15, 12.5, 17],  t: [0, 0.4, -1.5] },
@@ -11,8 +15,8 @@ const VIEWS = {
 };
 
 const TIMES = {
-  dusk: { bg: 0x3a4670, hemiSky: 0xc4ceff, hemiGround: 0x5a463a, hemi: 1.55, sun: 0xffe0b0, sunI: 1.4, lantern: 1.9, fairy: 2.8, beam: 0.14, win: 1.3, bd: 0.4, tw: 1.0, lamp: 1 },
-  day:  { bg: 0xbcd8ee, hemiSky: 0xffffff, hemiGround: 0xb9a58c, hemi: 1.15, sun: 0xfff4e0, sunI: 2.3, lantern: 0.2, fairy: 0.15, beam: 0.0, win: 0.0, bd: 0.05, tw: 0.3, lamp: 0 }
+  dusk: { bg: 0x4b4470, sky: ['#0c1030', '#262a63', '#6d4a86', '#d7708a', '#f5a77a'], hemiSky: 0x9aa8e8, hemiGround: 0x5a4a48, hemi: 1.3, sun: 0xffc98f, sunI: 1.05, lantern: 2.3, fairy: 3.4, beam: 0.16, win: 0.8, bd: 0.55, tw: 1.0, lamp: 1, bloom: 0.28, exp: 0.95 },
+  day:  { bg: 0xbcd8ee, sky: ['#5c92cf', '#86b4df', '#b4d3ee', '#d9e9f5', '#eef3f5'], hemiSky: 0xffffff, hemiGround: 0xb9a58c, hemi: 1.1, sun: 0xfff4e0, sunI: 2.2, lantern: 0.2, fairy: 0.15, beam: 0.0, win: 0.0, bd: 0.05, tw: 0.3, lamp: 0, bloom: 0.12, exp: 0.95 }
 };
 
 const EYE = 1.62;
@@ -36,6 +40,18 @@ export function createScene(container, opts) {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(TIMES.dusk.bg);
   scene.fog = new THREE.Fog(TIMES.dusk.bg, 48, 120);
+
+  // vòm trời chuyển màu, đổi theo buổi tối hay ban ngày
+  const skyCv = document.createElement('canvas'); skyCv.width = 4; skyCv.height = 256;
+  const skyTex = new THREE.CanvasTexture(skyCv); skyTex.colorSpace = THREE.SRGBColorSpace;
+  const skyMesh = new THREE.Mesh(new THREE.SphereGeometry(210, 24, 16), new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.BackSide, fog: false, depthWrite: false }));
+  skyMesh.renderOrder = -10; skyMesh.frustumCulled = false;
+  scene.add(skyMesh);
+  function paintSky(stops) {
+    const g = skyCv.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 256);
+    gr.addColorStop(0, stops[0]); gr.addColorStop(0.38, stops[1]); gr.addColorStop(0.52, stops[2]); gr.addColorStop(0.62, stops[3]); gr.addColorStop(0.74, stops[4]); gr.addColorStop(1, stops[4]);
+    g.fillStyle = gr; g.fillRect(0, 0, 4, 256); skyTex.needsUpdate = true;
+  }
 
   const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 300);
   camera.position.set(...VIEWS.overview.p);
@@ -65,6 +81,19 @@ export function createScene(container, opts) {
   sun.shadow.bias = -0.0005;
   sun.shadow.normalBias = 0.03;
   scene.add(sun);
+
+  /* ---------- Hiệu ứng phát sáng quanh đèn lồng, đèn nháy (chỉ máy đủ mạnh) ---------- */
+  let composer = null, bloom = null;
+  if (!lowPower) {
+    try {
+      const rt = new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType, samples: 4 });
+      composer = new EffectComposer(renderer, rt);
+      composer.addPass(new RenderPass(scene, camera));
+      bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), 0.35, 0.55, 1.05);
+      composer.addPass(bloom);
+      composer.addPass(new OutputPass());
+    } catch (e) { composer = null; bloom = null; }
+  }
 
   /* ---------- Thế giới ---------- */
   const loader = new THREE.TextureLoader();
@@ -213,6 +242,9 @@ export function createScene(container, opts) {
     const T = TIMES[m];
     scene.background.setHex(T.bg);
     scene.fog.color.setHex(T.bg);
+    paintSky(T.sky);
+    renderer.toneMappingExposure = T.exp;
+    if (bloom) bloom.strength = T.bloom;
     hemi.color.setHex(T.hemiSky); hemi.groundColor.setHex(T.hemiGround); hemi.intensity = T.hemi;
     sun.color.setHex(T.sun); sun.intensity = T.sunI;
     lanternMat.emissiveIntensity = T.lantern;
@@ -459,9 +491,30 @@ export function createScene(container, opts) {
     });
   }
 
+  /* ---------- Chữ nhắc nổi lên khi đến gần bàn đón tiếp ---------- */
+  const nearEl = document.createElement('div');
+  nearEl.className = 'nearhint'; nearEl.setAttribute('aria-live', 'polite');
+  nearEl.textContent = (cfg.scene && cfg.scene.nearText) || 'Xin mời lấy brochure sự kiện và hái lộc đầu xuân';
+  hotspotLayer.appendChild(nearEl);
+  const nearPt = new THREE.Vector3(0, 2.15, 7.6);
+  let nearK = 0, nearDt = 0.016;
+  function updateNear() {
+    const d = Math.hypot(camera.position.x - 0, camera.position.z - 7.6);
+    const want = (d < 4.6 && camera.position.y < 4.2 && !activeId) ? 1 : 0;
+    nearK += (want - nearK) * Math.min(1, nearDt * 7);
+    if (nearK < 0.02) { nearEl.style.opacity = 0; nearEl.style.visibility = 'hidden'; return; }
+    tmp.copy(nearPt).project(camera);
+    const w = container.clientWidth, h = container.clientHeight;
+    if (tmp.z > 1 || tmp.z < -1) { nearEl.style.visibility = 'hidden'; return; }
+    const y = Math.min(Math.max((-tmp.y * 0.5 + 0.5) * h, 90), h - 90);
+    nearEl.style.visibility = 'visible'; nearEl.style.opacity = nearK.toFixed(2);
+    nearEl.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * w}px, ${y}px) translate(-50%, -50%) translateY(${((1 - nearK) * 10).toFixed(1)}px)`;
+  }
+
   function resize() {
     const w = container.clientWidth || 1, h = container.clientHeight || 1;
     renderer.setSize(w, h, false);
+    if (composer) { composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(w, h); }
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
@@ -512,7 +565,8 @@ export function createScene(container, opts) {
     updateConfetti(dt);
     updateHotspots();
     if (shadowFrames > 0) { renderer.shadowMap.needsUpdate = true; shadowFrames--; }
-    renderer.render(scene, camera);
+    nearDt = dt; updateNear();
+    if (composer) composer.render(); else renderer.render(scene, camera);
   }
 
   function start() { if (running) return; running = true; shadowFrames = 8; last = performance.now(); resize(); raf = requestAnimationFrame(frame); }

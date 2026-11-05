@@ -1,7 +1,6 @@
-import { CONFIG } from './config.js?v=9';
+import { CONFIG } from './config.js?v=10';
 
-/* Gộp nội dung đã chỉnh trong data/content.json lên bản mặc định.
-   Đối tượng thì gộp từng mục, danh sách thì thay hẳn. */
+/* Hàm gộp đối tượng, giữ lại để dùng khi cần. */
 export function mergeDeep(base, over) {
   if (Array.isArray(over)) return over;
   if (over && typeof over === 'object' && base && typeof base === 'object' && !Array.isArray(base)) {
@@ -15,7 +14,7 @@ export function mergeDeep(base, over) {
 /* Font có sẵn để chọn. custom = không có trên Google Fonts, phải tải file font lên trong trang quản trị */
 export const FONT_OPTIONS = {
   heading: [
-    { label: 'Fraunces', family: 'Fraunces', weight: 600, google: 'Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700' },
+    { label: 'Fraunces', family: 'Fraunces', weight: 600, google: 'Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700', local: true },
     { label: 'Cormorant Garamond', family: 'Cormorant Garamond', weight: 700, google: 'Cormorant+Garamond:wght@600;700' },
     { label: 'Amarego', family: 'Amarego', weight: 700, custom: true },
     { label: 'Assox', family: 'Assox', weight: 700, custom: true },
@@ -24,6 +23,7 @@ export const FONT_OPTIONS = {
     { label: 'Lora', family: 'Lora', weight: 700, google: 'Lora:wght@600;700' }
   ],
   body: [
+    { label: 'EB Garamond (hệ font của chương trình)', family: 'EB Garamond VN', weight: 400, local: true },
     { label: 'Be Vietnam Pro', family: 'Be Vietnam Pro', weight: 400, google: 'Be+Vietnam+Pro:wght@400;500;600' },
     { label: 'Montserrat', family: 'Montserrat', weight: 400, google: 'Montserrat:wght@400;500;600' },
     { label: 'Rokkitt', family: 'Rokkitt', weight: 400, google: 'Rokkitt:wght@400;500;600' },
@@ -36,31 +36,20 @@ function normalise(c) {
   const m = c.moodboard;
   if (Array.isArray(m.fonts)) m.fonts = { title: [], body: [] };
   m.fonts = { title: [], body: [], ...m.fonts };
+  m.visualCue = (m.visualCue || []).filter(g => g.images); m.elements = (m.elements || []).filter(g => g.images);
+  m.products = m.products || {}; m.products.backdrop = m.products.backdrop || []; m.products.poster = m.products.poster || [];
   const names = new Set(c.theme.customFonts.map(f => f.name));
   CONFIG.theme.customFonts.forEach(f => { if (!names.has(f.name)) c.theme.customFonts.push({ ...f }); });
   c.zones.forEach(z => { delete z.refs; });
+  const have = new Set((c.documents || []).map(d => d.label));                // đủ các mục tài liệu mặc định, giữ nguyên mục đã chỉnh
+  CONFIG.documents.forEach(d => { if (!have.has(d.label)) c.documents.push({ ...d }); });
+  c.documents.forEach(d => { if (d.link === undefined) d.link = ''; });
+  (c.scene.foods || []).forEach(f => { if (f.kind === 'drink') { f.kind = 'nem'; if (!f.name || /nước/i.test(f.name)) f.name = 'Nem rán'; } });
   return c;
 }
 
-export async function loadConfig(bust = true) {
-  const base = JSON.parse(JSON.stringify(CONFIG));
-  try {
-    const r = await fetch('data/content.json' + (bust ? '?t=' + Date.now() : ''), { cache: 'no-store' });
-    if (r.ok) {
-      const j = await r.json();
-      if ((j.zonesRev || 0) < CONFIG.zonesRev) delete j.zones;
-      if ((j.proposalRev || 0) < CONFIG.proposalRev) {                 // Proposal trình bày thẳng trên web, bỏ phần slide Canva cũ
-        delete j.proposal;
-        if (j.content) { delete j.content.proposalDesc; delete j.content.proposalButton; delete j.content.lead; }
-      }
-      if ((j.themeRev || 0) < CONFIG.themeRev && j.theme) {       // giao diện mới: bỏ font tiêu đề mặc định cũ và bộ màu chữ cũ
-        if (j.theme.headingFont === 'Cormorant Garamond') delete j.theme.headingFont;
-        delete j.theme.colors;
-      }   // mô tả các khu đã được rút gọn, dùng bản mới
-      return normalise(mergeDeep(base, j));
-    }
-  } catch (e) { /* dùng bản mặc định */ }
-  return normalise(base);
+export async function loadConfig() {
+  return normalise(JSON.parse(JSON.stringify(CONFIG)));
 }
 
 const addLink = href => {
@@ -76,7 +65,7 @@ export function applyTheme(c) {
   const style = document.createElement('style');
   let css = '';
   [h, b].forEach(o => {
-    if (o.google) addLink(`https://fonts.googleapis.com/css2?family=${o.google}&display=swap`);
+    if (o.google && !o.local) addLink(`https://fonts.googleapis.com/css2?family=${o.google}&display=swap`);
     if (o.custom) {
       const cf = t.customFonts.find(f => f.name === o.label);
       if (cf && cf.file) css += `@font-face{font-family:'${o.family}';src:url('${cf.file}');font-display:swap;font-weight:100 900;}\n`;
@@ -84,7 +73,7 @@ export function applyTheme(c) {
   });
   const hasFile = o => !o.custom || !!(t.customFonts.find(f => f.name === o.label) || {}).file;
   const fd = `'${h.family}'${hasFile(h) ? '' : ", 'Fraunces'"}, Georgia, serif`;
-  const fb = `'${b.family}'${hasFile(b) ? '' : ", 'Be Vietnam Pro'"}, system-ui, sans-serif`;
+  const fb = b.local ? `'${b.family}', 'EB Garamond', Georgia, serif` : `'${b.family}'${hasFile(b) ? '' : ", 'Be Vietnam Pro'"}, system-ui, sans-serif`;
   const root = document.documentElement.style;
   root.setProperty('--font-display', fd);
   root.setProperty('--font-body', fb);

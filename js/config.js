@@ -1,19 +1,19 @@
 /*
   NỘI DUNG MẶC ĐỊNH CỦA TRANG WEB
-  Nội dung thật được chỉnh trong trang quản trị (admin.html) và lưu ở data/content.json.
-  File này chỉ là bản dự phòng khi data/content.json chưa có hoặc thiếu mục nào đó.
+  Toàn bộ nội dung của trang nằm ở file này.
 */
 
 export const CONFIG = {
   eventName: 'Xuân Quê hương 2027',
-  eventSub: 'Đinh Mùi 2027',
+  eventSub: 'Xuân Quê Hương - Đinh Mùi 2027',
+  credit: 'Được thực hiện bởi: Nguyễn Thị Minh Ngọc, Đào Thu Hiền, Nguyễn Trung Thành',
   org: 'Đại sứ quán Việt Nam tại Algeria',
   team: 'Nhóm Thực tập sinh',
   footer: 'Kế hoạch truyền thông cho chương trình Xuân Quê hương 2027 tại Đại sứ quán Việt Nam tại Algeria được thực hiện bởi Nhóm Thực tập sinh.',
 
   theme: {
     headingFont: 'Fraunces',
-    bodyFont: 'Be Vietnam Pro',
+    bodyFont: 'EB Garamond (hệ font của chương trình)',
     customFonts: [
       { name: 'Amarego', file: '' },
       { name: 'Assox', file: '' },
@@ -21,33 +21,37 @@ export const CONFIG = {
       { name: 'Beautique Display Condensed', file: '' }
     ],
     colors: {
-      brand: '#f3dca3', heroTitle: '#e3b04b', heroText: '#f3dca3',
-      pageTitle: '#72101a', sectionTitle: '#72101a', body: '#655658',
-      thanksTitle: '#e3b04b', thanksText: '#f3dca3', footer: '#655658',
-      bannerTitle: '#f3dca3', bannerSub: '#e3b04b', couplet: '#f3dca3', sign: '#f3dca3'
+      brand: '#f6e3b4', heroTitle: '#efbf69', heroText: '#f6e3b4',
+      pageTitle: '#841b1a', sectionTitle: '#841b1a', body: '#5d4c4c',
+      thanksTitle: '#efbf69', thanksText: '#f6e3b4', footer: '#5d4c4c',
+      bannerTitle: '#f6e3b4', bannerSub: '#efbf69', couplet: '#f6e3b4', sign: '#f6e3b4'
     }
   },
 
-  hero: { image: 'assets/hero/key-visual.jpg', fit: 'cover', button: 'Bắt đầu xem' },
+  hero: { image: '', fit: 'cover', button: 'Bắt đầu xem', art: 'assets/poster/poster-facebook.jpg' },
 
   content: {
     title: 'Nội dung trình bày',
-    lead: 'Chọn cách xem phù hợp. Kho tài liệu dùng để tải bản kế hoạch về trình bày với Đại sứ, còn phần Proposal trình bày toàn bộ kế hoạch ngay trên trang, rồi tới moodboard và không gian 3D của sân tổ chức.',
+    lead: 'Dưới đây là kho lưu trữ gồm bản kế hoạch dạng văn bản và các thiết kế trên Canva để tải về hoặc trình bày. Phần Proposal giới thiệu đầy đủ kế hoạch truyền thông ngay trên trang, tiếp đó là moodboard và không gian 3D mô phỏng sân tổ chức sự kiện.',
     docsTitle: 'Kho lưu trữ tài liệu mềm',
-    docsDesc: 'Bản kế hoạch truyền thông tổng quan dạng văn bản, phục vụ tải về để chỉnh sửa hoặc in.',
+    docsDesc: 'Bản kế hoạch dạng văn bản và đường dẫn tới các thiết kế trên Canva: moodboard, phông nền sân khấu, brochure, poster.',
     proposalTitle: 'Proposal',
-    proposalDesc: 'Xem kế hoạch truyền thông tổng quan và timeline truyền thông online, offline của chương trình.',
+    proposalDesc: 'Giới thiệu tổng quan kế hoạch truyền thông và timeline các hoạt động online, offline của chương trình.',
     proposalButton: 'Mở phần Proposal'
   },
 
   documents: [
-    { label: 'Bản Word', file: 'assets/docs/ke-hoach-truyen-thong-tong-quan.docx', note: 'Dùng để chỉnh sửa hoặc trình bày với Đại sứ' },
-    { label: 'Bản PDF', file: 'assets/docs/ke-hoach-truyen-thong-tong-quan.pdf', note: 'Dùng để xem nhanh và in' }
+    { label: 'Bản Google Docs', file: '', link: 'https://docs.google.com/document/d/1A4qeaC25DkdnlFTa34WX3N4cB76Ttdjz0aQNVgl_0gI/edit?usp=sharing', note: 'Bản kế hoạch dạng văn bản, dùng để xem và góp ý trực tiếp' },
+    { label: 'Bản PDF', file: 'assets/docs/ke-hoach-truyen-thong-tong-quan.pdf', link: '', note: 'Dùng để xem nhanh, tải về và in' },
+    { label: 'Moodboard', file: '', link: 'https://www.canva.com/d/pJ1kRKRdMtmffJr', note: 'Thiết kế moodboard trên Canva: ý tưởng, bảng màu, visual cue, font, elements' },
+    { label: 'Phông nền sân khấu', file: '', link: 'https://www.canva.com/d/NY9zhXnXPNV6Tzj', note: 'Thiết kế phông nền sân khấu trên Canva' },
+    { label: 'Brochure', file: '', link: 'https://www.canva.com/d/AD_btush8sa71lJ', note: 'Thiết kế brochure hai mặt, tiếng Việt và tiếng Pháp, trên Canva' },
+    { label: 'Poster Facebook', file: '', link: 'https://www.canva.com/d/VWtQS7e9AayC3Qn', note: 'Thiết kế poster đăng Facebook, cũng là key visual của sự kiện' }
   ],
 
   proposal: {
     title: 'Proposal truyền thông',
-    lead: 'Kế hoạch truyền thông tổng quan và timeline truyền thông online, offline cho chương trình Xuân Quê hương Đinh Mùi 2027 tại Algeria.',
+    lead: 'Kế hoạch truyền thông tổng thể cho chương trình Xuân Quê hương - Đinh Mùi 2027 tại Algeria, gồm định hướng nội dung, các kênh triển khai và timeline thực hiện online, offline.',
     overview: {
       title: 'Kế hoạch truyền thông tổng quan',
       info: [
@@ -114,27 +118,329 @@ export const CONFIG = {
 
   moodboard: {
     title: 'Moodboard và visual cue',
-    lead: 'Không khí, hình ảnh nhận diện và các yếu tố đồ họa xuyên suốt chương trình.',
-    images: [],
-    keyVisual: { image: '', caption: 'Key visual của chương trình' },
+    lead: 'Phần này giới thiệu định hướng hình ảnh của chương trình, từ ý tưởng tổng quan, bảng màu, font chữ, các yếu tố đồ họa đến những sản phẩm truyền thông hoàn chỉnh. Sắc đỏ Tết Việt kết hợp với hoa văn Hồi giáo thể hiện sự giao thoa văn hóa Việt Nam và Algeria, mang lại cảm giác ấm áp, trang trọng cho toàn bộ sự kiện.',
+    images: [
+      { src: 'assets/moodboard/01-y-tuong-tong-quan-v3.jpg', caption: '' }
+    ],
+    keyVisual: {
+      image: 'assets/poster/poster-facebook.jpg',
+      caption: 'Thiết kế sử dụng tông nền đỏ chủ đạo, kết hợp họa tiết hoa văn Hồi giáo cùng những hình ảnh trang trí đặc trưng của Tết Việt như nan quạt, hoa mai vàng và hoa đào hồng, gợi lên không khí hân hoan, phấn khởi và hạnh phúc. Hình ảnh chú dê tung tăng dưới những cánh chim én bay lượn vừa tạo cảm giác vui tươi, sinh động, vừa gửi gắm tinh thần lạc quan, hội nhập và khát vọng hướng tới tương lai.'
+    },
     palette: [
-      { name: 'Đỏ lụa', hex: '#A8141F', role: 'Màu chủ đạo, khăn bàn, lồng đèn' },
-      { name: 'Vàng mai', hex: '#E3B04B', role: 'Chữ tiêu đề, đường viền' },
-      { name: 'Hồng đào', hex: '#F2A5B8', role: 'Hoa, dải trang trí' },
-      { name: 'Xanh lá dong', hex: '#2F6B3F', role: 'Khu bánh chưng, điểm nhấn' },
-      { name: 'Trắng vôi', hex: '#F3F1EC', role: 'Nền, khoảng thở' }
+      { name: 'Đỏ son', hex: '#841B1A', role: 'Nền chủ đạo' },
+      { name: 'Đỏ quạt nan', hex: '#A71F02', role: 'Màu họa tiết quạt nan' },
+      { name: 'Xanh rêu', hex: '#23402F', role: 'Màu nền sản phẩm truyền thông' },
+      { name: 'Hồng đào', hex: '#FE909D', role: 'Màu hoa đào' },
+      { name: 'Vàng đồng', hex: '#EFBF69', role: 'Màu font và màu họa tiết' },
+      { name: 'Vàng nhạt', hex: '#F0C270', role: 'Màu font và màu họa tiết' },
+      { name: 'Vàng mai', hex: '#FDD05D', role: 'Màu hoa mai và màu font' },
+      { name: 'Vàng cam', hex: '#F0A622', role: 'Màu font và màu họa tiết' }
+    ],
+    visualCue: [
+          {
+                "title": "Khung vòm",
+                "text": "Trong phông nền, brochure, poster luôn có sự xuất hiện của khung vòm mang đậm màu sắc Hồi giáo. Hoàn toàn có thể cách điệu để phù hợp với sự giao thoa văn hóa hai nước trong dịp Tết Nguyên Đán.",
+                "images": [
+                      {
+                            "src": "assets/moodboard/cut/khung-vom-tet-viet.webp",
+                            "caption": "Khung vòm hoa văn",
+                            "w": 1081,
+                            "h": 508
+                      },
+                      {
+                            "src": "assets/moodboard/cut/khung-vom-phap.webp",
+                            "caption": "Khung vòm viền cánh sen",
+                            "w": 1110,
+                            "h": 542
+                      },
+                      {
+                            "src": "assets/moodboard/cut/khung-vom-poster.webp",
+                            "caption": "Khung vòm đứng",
+                            "w": 436,
+                            "h": 822
+                      }
+                ]
+          },
+          {
+                "title": "Nan quạt bán nguyệt",
+                "text": "Hình nan quạt bán nguyệt xuất hiện dày đặc, xếp lớp tạo không khí Tết; ghép hai hình bán nguyệt thành hình những nan quạt tròn, tạo điểm nhấn thị giác.",
+                "images": [
+                      {
+                            "src": "assets/moodboard/cut/nan-quat-do.webp",
+                            "caption": "Cụm quạt xếp lớp",
+                            "w": 988,
+                            "h": 556
+                      },
+                      {
+                            "src": "assets/moodboard/cut/nan-quat-hoa.webp",
+                            "caption": "Nan quạt bán nguyệt",
+                            "w": 656,
+                            "h": 552
+                      },
+                      {
+                            "src": "assets/moodboard/cut/nan-quat-ban-nguyet.webp",
+                            "caption": "Nan quạt bán nguyệt vàng",
+                            "w": 692,
+                            "h": 346
+                      },
+                      {
+                            "src": "assets/moodboard/cut/nan-quat-dai.webp",
+                            "caption": "Dải nan quạt",
+                            "w": 1500,
+                            "h": 261
+                      },
+                      {
+                            "src": "assets/moodboard/cut/nan-quat-vien.webp",
+                            "caption": "Viền nan quạt đỏ cam",
+                            "w": 1413,
+                            "h": 260
+                      }
+                ]
+          },
+          {
+                "title": "Trống đồng và nan quạt tròn",
+                "text": "Thiết kế trống đồng, nan quạt tròn đều được sử dụng nhiều trong các thiết kế. Các hình khối này được ghép theo phông nền.",
+                "images": [
+                      {
+                            "src": "assets/moodboard/cut/trong-dong.webp",
+                            "caption": "Trống đồng",
+                            "w": 813,
+                            "h": 812
+                      },
+                      {
+                            "src": "assets/moodboard/cut/trong-dong-bia.webp",
+                            "caption": "Trống đồng cách điệu",
+                            "w": 662,
+                            "h": 652
+                      },
+                      {
+                            "src": "assets/moodboard/cut/nan-quat-tron.webp",
+                            "caption": "Nan quạt tròn",
+                            "w": 510,
+                            "h": 510
+                      }
+                ]
+          },
+          {
+                "title": "Đường viền và dải trang trí",
+                "text": "Những đường viền mảnh dùng để ngăn cách các phần nội dung và làm gọn bố cục trên phông nền, brochure và poster.",
+                "images": [
+                      {
+                            "src": "assets/moodboard/cut/vien-may.webp",
+                            "caption": "Viền mây",
+                            "w": 1385,
+                            "h": 19
+                      },
+                      {
+                            "src": "assets/moodboard/cut/vien-kim-cuong.webp",
+                            "caption": "Viền kim cương",
+                            "w": 1414,
+                            "h": 68
+                      },
+                      {
+                            "src": "assets/moodboard/cut/dai-may.webp",
+                            "caption": "Dải mây vàng",
+                            "w": 872,
+                            "h": 762
+                      }
+                ]
+          }
     ],
     fonts: {
-      title: [],
+      title: [{ src: 'assets/moodboard/06-font-v2.jpg', caption: '' }],
       body: []
     },
-    elements: [],
-    products: { backdrop: [] }
+    elements: [
+          {
+                "title": "Hoa mai và hoa đào",
+                "text": "Hoa mai vàng và hoa đào hồng, hai loài hoa gợi không khí Tết Việt.",
+                "images": [
+                      {
+                            "src": "assets/moodboard/cut/hoa-mai-mot.webp",
+                            "caption": "Hoa mai",
+                            "w": 527,
+                            "h": 518
+                      },
+                      {
+                            "src": "assets/moodboard/cut/canh-mai-phang.webp",
+                            "caption": "Cành mai",
+                            "w": 469,
+                            "h": 480
+                      },
+                      {
+                            "src": "assets/moodboard/cut/canh-mai-mau-nuoc.webp",
+                            "caption": "Cành mai màu nước",
+                            "w": 422,
+                            "h": 494
+                      },
+                      {
+                            "src": "assets/moodboard/cut/canh-mai-vang.webp",
+                            "caption": "Cành mai vàng",
+                            "w": 422,
+                            "h": 638
+                      },
+                      {
+                            "src": "assets/moodboard/cut/hoa-dao.webp",
+                            "caption": "Hoa đào",
+                            "w": 605,
+                            "h": 528
+                      },
+                      {
+                            "src": "assets/moodboard/cut/hoa-dao-doi.webp",
+                            "caption": "Hoa đào đôi",
+                            "w": 706,
+                            "h": 533
+                      },
+                      {
+                            "src": "assets/moodboard/cut/canh-hoa-hong.webp",
+                            "caption": "Cành hoa hồng phấn",
+                            "w": 732,
+                            "h": 446
+                      }
+                ]
+          },
+          {
+                "title": "Chim én và chim lạc",
+                "text": "Chim én báo hiệu mùa xuân, chim lạc lấy từ họa tiết trống đồng.",
+                "images": [
+                      {
+                            "src": "assets/moodboard/cut/chim-en.webp",
+                            "caption": "Đàn chim én",
+                            "w": 1114,
+                            "h": 516
+                      },
+                      {
+                            "src": "assets/moodboard/cut/chim-kem.webp",
+                            "caption": "Chim vàng kem",
+                            "w": 805,
+                            "h": 517
+                      },
+                      {
+                            "src": "assets/moodboard/cut/chim-lac.webp",
+                            "caption": "Chim lạc",
+                            "w": 953,
+                            "h": 494
+                      }
+                ]
+          },
+          {
+                "title": "Biểu tượng",
+                "text": "Con dê của năm Đinh Mùi, pháo hoa và nét đường chân trời quê hương.",
+                "images": [
+                      {
+                            "src": "assets/moodboard/cut/de-vang.webp",
+                            "caption": "Con dê",
+                            "w": 617,
+                            "h": 709
+                      },
+                      {
+                            "src": "assets/moodboard/cut/phao-hoa.webp",
+                            "caption": "Pháo hoa",
+                            "w": 895,
+                            "h": 607
+                      },
+                      {
+                            "src": "assets/moodboard/cut/skyline.webp",
+                            "caption": "Đường chân trời",
+                            "w": 1396,
+                            "h": 440
+                      }
+                ]
+          },
+          {
+                "title": "Ẩm thực",
+                "text": "Ảnh decor ẩm thực Việt, tách nền để ghép vào bàn tiệc, tờ rơi và hình quảng bá.",
+                "images": [
+                      {
+                            "src": "assets/moodboard/cut/banh-chung-minh-hoa.webp",
+                            "caption": "Bánh chưng minh họa",
+                            "w": 842,
+                            "h": 559
+                      },
+                      {
+                            "src": "assets/moodboard/cut/banh-chung-that.webp",
+                            "caption": "Bánh chưng",
+                            "w": 868,
+                            "h": 555
+                      },
+                      {
+                            "src": "assets/moodboard/cut/pho.webp",
+                            "caption": "Phở",
+                            "w": 671,
+                            "h": 475
+                      },
+                      {
+                            "src": "assets/moodboard/cut/nem-ran.webp",
+                            "caption": "Nem rán",
+                            "w": 652,
+                            "h": 434
+                      },
+                      {
+                            "src": "assets/moodboard/cut/banh-mi.webp",
+                            "caption": "Bánh mì",
+                            "w": 791,
+                            "h": 288
+                      },
+                      {
+                            "src": "assets/moodboard/cut/ca-phe.webp",
+                            "caption": "Cà phê",
+                            "w": 381,
+                            "h": 510
+                      },
+                      {
+                            "src": "assets/moodboard/cut/la-chuoi.webp",
+                            "caption": "Lá chuối",
+                            "w": 951,
+                            "h": 501
+                      },
+                      {
+                            "src": "assets/moodboard/cut/khan-caro.webp",
+                            "caption": "Khăn caro",
+                            "w": 727,
+                            "h": 604
+                      }
+                ]
+          },
+          {
+                "title": "Hoa văn Hồi giáo",
+                "text": "Họa tiết Hồi giáo dạng lưới hình học, dùng làm góc khung và nền phụ.",
+                "images": [
+                      {
+                            "src": "assets/moodboard/cut/goc-hoi-giao-1.webp",
+                            "caption": "Góc hoa văn 1",
+                            "w": 683,
+                            "h": 676
+                      },
+                      {
+                            "src": "assets/moodboard/cut/goc-hoi-giao-2.webp",
+                            "caption": "Góc hoa văn 2",
+                            "w": 659,
+                            "h": 659
+                      },
+                      {
+                            "src": "assets/moodboard/cut/goc-hoi-giao-3.webp",
+                            "caption": "Góc hoa văn 3",
+                            "w": 437,
+                            "h": 874
+                      },
+                      {
+                            "src": "assets/moodboard/cut/hoa-van-hoi-giao.webp",
+                            "caption": "Hoa văn lặp",
+                            "w": 750,
+                            "h": 750
+                      }
+                ]
+          }
+    ],
+    products: {
+      backdrop: [{ src: 'assets/backdrop/backdrop-2027.jpg', caption: 'Phông nền sân khấu chính thức: Thiết kế 16:9, hiện lên sân khấu trong không gian 3D.' }],
+      poster: [{ src: 'assets/poster/poster-facebook.jpg', caption: 'Poster Facebook chính thức: Dùng làm key visual của sự kiện.' }]
+    }
   },
 
   scene: {
     backdropImage: 'assets/backdrop/backdrop-2027.jpg',
-    backdropSize: [6.4, 3.4],
+    backdropSize: [6.4, 3.6],
     useLed: false,
     gateText: 'XUÂN QUÊ HƯƠNG ĐINH MÙI 2027',
     emblemImage: 'assets/ref/quoc-huy.png',
@@ -193,14 +499,14 @@ export const CONFIG = {
       { kind: 'sup', name: 'Súp', note: 'Xin mời!' },
       { kind: 'che', name: 'Chè', note: 'Xin mời!' },
       { kind: 'banhchung', name: 'Bánh chưng', note: 'Xin mời!' },
-      { kind: 'drink', name: 'Nước uống', note: 'Xin mời!' }
+      { kind: 'nem', name: 'Nem rán', note: 'Xin mời!' }
     ]
   },
 
   brochure: {
     title: 'Brochure chương trình',
-    front: 'assets/brochure/sample-mat-truoc.jpg',
-    back: 'assets/brochure/sample-mat-sau.jpg',
+    front: 'assets/brochure/mat-truoc.jpg',
+    back: 'assets/brochure/mat-sau.jpg',
     frontLabel: 'Mặt tiếng Việt',
     backLabel: 'Mặt tiếng Pháp (Verso)',
     note: 'Brochure được phát tại bàn đón tiếp. Khách có thể cầm theo để xem lại chương trình.'
@@ -208,13 +514,15 @@ export const CONFIG = {
 
   thanks: {
     title: 'Xin trân trọng cảm ơn',
-    message: 'Nhóm Thực tập sinh xin chân thành cảm ơn quý lãnh đạo đã dành thời gian theo dõi kế hoạch truyền thông chương trình Xuân Quê hương 2027. Rất mong nhận được ý kiến đóng góp của quý lãnh đạo để chương trình thêm trọn vẹn.',
-    sign: 'Nhóm Thực tập sinh, Đại sứ quán Việt Nam tại Algeria'
+    message: 'Nhóm Thực tập sinh xin chân thành cảm ơn các anh chị tại Đại sứ quán đã dành thời gian theo dõi kế hoạch truyền thông chương trình Xuân Quê hương 2027. Rất mong nhận được ý kiến đóng góp của các anh chị để chương trình thêm trọn vẹn.',
+    sign: 'Nhóm Thực tập sinh tại Đại sứ quán Việt Nam tại Algeria'
   },
 
   proposalRev: 1,
-  zonesRev: 3,
-  themeRev: 1,
+  zonesRev: 4,
+  themeRev: 2,
+  moodRev: 3,
+  docsRev: 1,
   zones: [
     {
       id: 'gate', no: 1, name: 'Cổng chào',
@@ -229,7 +537,7 @@ export const CONFIG = {
     {
       id: 'coffee', no: 3, name: 'Gian thưởng thức cà phê',
       desc: 'Gian mái sọc đỏ trắng, kệ gỗ bày gói cà phê, quầy phin và nhiều cốc để khách nếm thử.',
-      plan: 'Hình ảnh nhấn vào cà phê phin nhỏ giọt, hợp quay video ngắn.'
+      plan: 'Cà phê là một trong những mặt hàng nông sản xuất khẩu chủ lực của Việt Nam, và Việt Nam thuộc nhóm các nước xuất khẩu cà phê lớn nhất thế giới. Cà phê phin nhỏ giọt, cà phê sữa đá là những cách thưởng thức đã trở thành nét văn hóa riêng của người Việt.'
     },
     {
       id: 'tea', no: 4, name: 'Gian thưởng thức trà',
@@ -243,38 +551,31 @@ export const CONFIG = {
     },
     {
       id: 'cocktail', no: 6, name: 'Bàn tiệc đứng',
-      desc: 'Các bàn cao phủ khăn đỏ ở giữa sân để khách vừa đứng dùng món vừa trò chuyện.',
-      plan: 'Khu giao lưu chính, dễ ghi lại khoảnh khắc tự nhiên.'
+      desc: 'Các bàn cao phủ khăn đỏ ở giữa sân để khách vừa đứng dùng món vừa trò chuyện.'
     },
     {
       id: 'buffet', no: 7, name: 'Khu buffet món Việt',
-      desc: 'Mái che lớn với sáu bàn: phở, bánh mì, súp, chè, bánh chưng và quầy nước. Bấm vào từng bàn để xem tên món.',
-      plan: 'Bốn góc mái có đèn lớn, lối đi giữa các hàng đi một chiều.'
+      desc: 'Mái che lớn với sáu bàn: phở, bánh mì, súp, chè, bánh chưng và nem rán. Bấm vào từng bàn để xem tên món.'
     },
     {
       id: 'seating', no: 8, name: 'Khu mời ngồi',
-      desc: 'Các bàn tròn cho khách lớn tuổi, gia đình có trẻ nhỏ, đặt bên trái gần sân khấu dưới tán cây.',
-      plan: 'Có thể đặt biển giữ chỗ cho khách mời chính.'
+      desc: 'Các bàn tròn cho khách lớn tuổi, gia đình có trẻ nhỏ, đặt bên trái gần sân khấu dưới tán cây.'
     },
     {
       id: 'standing', no: 9, name: 'Khu khách đứng',
-      desc: 'Khoảng sân rộng trước sân khấu, nơi phần lớn trong 150 khách đứng theo dõi chương trình.',
-      plan: 'Chừa lối đi hai bên cho nhân sự và máy quay.'
+      desc: 'Khoảng sân rộng trước sân khấu, nơi phần lớn trong 150 khách đứng theo dõi chương trình.'
     },
     {
       id: 'stage', no: 10, name: 'Sân khấu',
-      desc: 'Bục thấp trải thảm đỏ sát tường trắng, đủ cho phát biểu, trao quà và chụp ảnh tập thể.',
-      plan: 'Hai chậu đào, mai ở hai đầu bục, dây đèn chạy dọc tường phía trên.'
+      desc: 'Bục thấp trải thảm đỏ sát tường trắng, đủ cho phát biểu, trao quà và chụp ảnh tập thể.'
     },
     {
       id: 'backdrop', no: 11, name: 'Phông nền',
-      desc: 'Phông 2027 cần nét giao thoa với Algeria. Thiết kế của team được thêm trong trang quản trị và hiện ngay trên sân khấu.',
-      plan: 'Là nền chụp ảnh tập thể, chữ và họa tiết phải đọc rõ khi có đông người đứng trước.'
+      desc: 'Phông chính thức của chương trình: nền đỏ lì xì, khung vòm vàng mang hoa văn Hồi giáo ôm lấy dòng chữ Xuân Quê Hương, nan quạt và hoa đào, hoa mai ở chân phông.'
     },
     {
       id: 'podium', no: 12, name: 'Bục phát biểu',
-      desc: 'Đặt bên trái sân khấu, có micro và biểu tượng chương trình, người phát biểu đứng gần phông.',
-      plan: 'Kiểm tra góc máy từ khu khách đứng để phông luôn nằm gọn sau người phát biểu.'
+      desc: 'Đặt bên trái sân khấu, có micro và biểu tượng chương trình, người phát biểu đứng gần phông.'
     }
   ]
 };
